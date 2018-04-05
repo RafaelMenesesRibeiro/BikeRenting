@@ -1,4 +1,4 @@
-# Projeto de Sistemas Distribu�dos 2017/18 #
+# Projeto de Sistemas Distribuídos 2017/18 #
 
 Grupo T01
 
