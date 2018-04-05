@@ -1,14 +1,12 @@
-# Projeto de Sistemas Distribuídos 2017/18 #
+# Projeto de Sistemas Distribuï¿½dos 2017/18 #
 
-Grupo CXX
-*(preencher com identificador de grupo e depois apagar esta linha)*
+Grupo T01
 
-... ... ...
+Mafalda Gaspar 77921 mariamafaldag@gmail.com
 
-... ... ...
+Diogo Vilela 84710 diogofsvilela@gmail.com
 
-... ... ...
-*(preencher com nome, número e email de membro do grupo e depois apagar esta linha)*
+Rafael Ribeiro 84758 rafaelmmribeiro@gmail.com
 
 
 -------------------------------------------------------------------------------
