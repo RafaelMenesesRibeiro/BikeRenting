@@ -99,6 +99,7 @@ public class StationPortImpl implements StationPortType {
 	/** Helper to convert a domain station to a view. */
 	private StationView buildStationView(StationPortImpl stationPortImpl) {
 		StationView view = new StationView();
+		/*
 		view.setId(stationPortImpl.getId());
 		view.setCoordinate(buildCoordinatesView(stationPortImpl.getCoordinates()));
 		view.setCapacity(stationPortImpl.getMaxCapacity());
@@ -106,6 +107,7 @@ public class StationPortImpl implements StationPortType {
 		view.setTotalReturns(stationPortImpl.getTotalReturns());
 		view.setFreeDocks(stationPortImpl.getFreeDocks());
 		view.setAvailableBinas(stationPortImpl.getAvailableBinas());
+		*/
 		return view;
 	}
 	
