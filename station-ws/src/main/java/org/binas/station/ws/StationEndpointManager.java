@@ -23,10 +23,10 @@ public class StationEndpointManager {
 	/** Port implementation */
 	private StationPortImpl portImpl = new StationPortImpl(this);
 
-	// /** Obtain Port implementation */
-	// public StationPortType getPort() {
-	// return portImpl;
-	// }
+	/** Obtain Port implementation */
+	public StationPortType getPort() {
+		return portImpl;
+	}
 
 	/** Web Service end point */
 	private Endpoint endpoint = null;

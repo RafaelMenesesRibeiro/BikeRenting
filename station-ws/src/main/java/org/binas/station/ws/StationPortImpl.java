@@ -38,21 +38,19 @@ public class StationPortImpl implements StationPortType {
 	/** Retrieve information about station. */
 	@Override
 	public StationView getInfo() {
-		// TODO
-		return null;
+		return buildStationView(Station.getInstance());
 	}
 	
 	/** Return a bike to the station. */
 	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
-		// TODO
-		return -1;
+		return Station.getInstance().returnBina();
 	}
 	
 	/** Take a bike from the station. */
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {
-		// TODO
+		Station.getInstance().getBina();
 	}
 
 	// Test Control operations -----------------------------------------------
@@ -97,20 +95,20 @@ public class StationPortImpl implements StationPortType {
 	// View helpers ----------------------------------------------------------
 
 	/** Helper to convert a domain station to a view. */
-	private StationView buildStationView(StationPortImpl stationPortImpl) {
+	private StationView buildStationView(Station station) {
 		StationView view = new StationView();
-		/*
-		view.setId(stationPortImpl.getId());
-		view.setCoordinate(buildCoordinatesView(stationPortImpl.getCoordinates()));
-		view.setCapacity(stationPortImpl.getMaxCapacity());
-		view.setTotalGets(stationPortImpl.getTotalGets());
-		view.setTotalReturns(stationPortImpl.getTotalReturns());
-		view.setFreeDocks(stationPortImpl.getFreeDocks());
-		view.setAvailableBinas(stationPortImpl.getAvailableBinas());
-		*/
+		
+		view.setId(station.getId());
+		view.setCoordinate(buildCoordinatesView(station.getCoordinates()));
+		view.setCapacity(station.getMaxCapacity());
+		view.setTotalGets(station.getTotalGets());
+		view.setTotalReturns(station.getTotalReturns());
+		view.setFreeDocks(station.getFreeDocks());
+		view.setAvailableBinas(station.getAvailableBinas());
+		
 		return view;
 	}
-	
+
 	/** Helper to convert a domain coordinates to a view. */
 	private CoordinatesView buildCoordinatesView(Coordinates coordinates) {
 		CoordinatesView view = new CoordinatesView();
