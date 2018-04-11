@@ -44,13 +44,19 @@ public class StationPortImpl implements StationPortType {
 	/** Return a bike to the station. */
 	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
-		return Station.getInstance().returnBina();
+		try {
+			return Station.getInstance().returnBina();
+		} catch (NoSlotAvailException nse) {
+			return -1;
+		}
 	}
 	
 	/** Take a bike from the station. */
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {
-		Station.getInstance().getBina();
+		try {
+			Station.getInstance().getBina();
+		} catch (NoBinaAvailException nse) {}	
 	}
 
 	// Test Control operations -----------------------------------------------
