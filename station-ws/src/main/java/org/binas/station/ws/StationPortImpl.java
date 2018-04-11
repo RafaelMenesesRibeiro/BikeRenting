@@ -2,6 +2,7 @@ package org.binas.station.ws;
 
 import javax.jws.WebService;
 
+import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
 
 import org.binas.station.domain.exception.BadInitException;
@@ -95,50 +96,47 @@ public class StationPortImpl implements StationPortType {
 
 	// View helpers ----------------------------------------------------------
 
-	// /** Helper to convert a domain station to a view. */
-	// private StationView buildStationView(Station station) {
-	// StationView view = new StationView();
-	// view.setId(station.getId());
-	// view.setCoordinate(buildCoordinatesView(station.getCoordinates()));
-	// view.setCapacity(station.getMaxCapacity());
-	// view.setTotalGets(station.getTotalGets());
-	// view.setTotalReturns(station.getTotalReturns());
-	// view.setFreeDocks(station.getFreeDocks());
-	// view.setAvailableBinas(station.getAvailableBinas());
-	// return view;
-	// }
-	//
-	// /** Helper to convert a domain coordinates to a view. */
-	// private CoordinatesView buildCoordinatesView(Coordinates coordinates) {
-	// CoordinatesView view = new CoordinatesView();
-	// view.setX(coordinates.getX());
-	// view.setY(coordinates.getY());
-	// return view;
-	// }
+	/** Helper to convert a domain station to a view. */
+	private StationView buildStationView(StationPortImpl stationPortImpl) {
+		StationView view = new StationView();
+		view.setId(stationPortImpl.getId());
+		view.setCoordinate(buildCoordinatesView(stationPortImpl.getCoordinates()));
+		view.setCapacity(stationPortImpl.getMaxCapacity());
+		view.setTotalGets(stationPortImpl.getTotalGets());
+		view.setTotalReturns(stationPortImpl.getTotalReturns());
+		view.setFreeDocks(stationPortImpl.getFreeDocks());
+		view.setAvailableBinas(stationPortImpl.getAvailableBinas());
+		return view;
+	}
+	
+	/** Helper to convert a domain coordinates to a view. */
+	private CoordinatesView buildCoordinatesView(Coordinates coordinates) {
+		CoordinatesView view = new CoordinatesView();
+		view.setX(coordinates.getX());
+		view.setY(coordinates.getY());
+		return view;
+	}
 
 	// Exception helpers -----------------------------------------------------
 
-	// /** Helper to throw a new NoBinaAvail exception. */
-	// private void throwNoBinaAvail(final String message) throws
-	// NoBinaAvail_Exception {
-	// NoBinaAvail faultInfo = new NoBinaAvail();
-	// faultInfo.message = message;
-	// throw new NoBinaAvail_Exception(message, faultInfo);
-	// }
-	//
-	// /** Helper to throw a new NoSlotAvail exception. */
-	// private void throwNoSlotAvail(final String message) throws
-	// NoSlotAvail_Exception {
-	// NoSlotAvail faultInfo = new NoSlotAvail();
-	// faultInfo.message = message;
-	// throw new NoSlotAvail_Exception(message, faultInfo);
-	// }
-	//
-	// /** Helper to throw a new BadInit exception. */
-	// private void throwBadInit(final String message) throws BadInit_Exception {
-	// BadInit faultInfo = new BadInit();
-	// faultInfo.message = message;
-	// throw new BadInit_Exception(message, faultInfo);
-	// }
-
+	/** Helper to throw a new NoBinaAvail exception. */
+	private void throwNoBinaAvail(final String message) throws NoBinaAvail_Exception {
+		NoBinaAvail faultInfo = new NoBinaAvail();
+		faultInfo.message = message;
+		throw new NoBinaAvail_Exception(message, faultInfo);
+	}
+	
+	/** Helper to throw a new NoSlotAvail exception. */
+	private void throwNoSlotAvail(final String message) throws NoSlotAvail_Exception {
+		NoSlotAvail faultInfo = new NoSlotAvail();
+		faultInfo.message = message;
+		throw new NoSlotAvail_Exception(message, faultInfo);
+	}
+	
+	/** Helper to throw a new BadInit exception. */
+	private void throwBadInit(final String message) throws BadInit_Exception {
+		BadInit faultInfo = new BadInit();
+		faultInfo.message = message;
+		throw new BadInit_Exception(message, faultInfo);
+	}
 }
