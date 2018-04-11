@@ -32,6 +32,12 @@
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.10</version>
 		</dependency>
+		<!-- UDDI Naming -->
+		<dependency>
+			<groupId>pt.ulisboa.tecnico.sdis</groupId>
+			<artifactId>uddi-naming</artifactId>
+			<version>1.2</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -73,6 +79,11 @@
 						<artifactId>jaxws-tools</artifactId>
 						<version>2.2.10</version>
 					</dependency>
+					<dependency>
+				        <groupId>org.binas.T01</groupId>
+				        <artifactId>station-ws-cli</artifactId>
+				        <version>1.0-SNAPSHOT</version>
+				    </dependency>
 				</dependencies>
 			</plugin>
 

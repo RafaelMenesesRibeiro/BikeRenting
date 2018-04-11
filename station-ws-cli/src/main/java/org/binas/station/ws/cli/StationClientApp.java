@@ -13,14 +13,27 @@ public class StationClientApp {
 		String uddiURL = null;
 		String wsName = null;
 		String wsURL = null;
-		if (args.length == 1) {
-			wsURL = args[0];
-		} else if (args.length >= 2) {
+
+		if (args.length == 1) { wsURL = args[0]; }
+		else if (args.length >= 2) {
 			uddiURL = args[0];
 			wsName = args[1];
 		}
 
 		System.out.println(StationClientApp.class.getSimpleName() + " running");
+
+		/*
+		int i = 1;
+		while (true) {
+			try {
+				String wsName = ;
+			}
+			catch {
+
+			}
+		}
+		*/
+
 
 		// Create client.
 		StationClient client = null;

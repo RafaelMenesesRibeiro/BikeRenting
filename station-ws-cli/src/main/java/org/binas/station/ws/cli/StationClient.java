@@ -5,6 +5,7 @@ import javax.xml.ws.BindingProvider;
 import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
 import java.util.Map;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 /**
  * Client port wrapper.
@@ -62,8 +63,26 @@ public class StationClient implements StationPortType {
 	/** UDDI lookup */
 	private void uddiLookup() throws StationClientException {
 		// TODO
-	}
 
+		System.out.println("uddiLookup" + this.wsName);
+
+		try {
+			if (verbose) { System.out.println("Contacting UDDI at " + this.uddiURL); }
+			UDDINaming uddiNaming = new UDDINaming(this.uddiURL);
+			
+			if (verbose) { System.out.println("Looking for %s%n" + this.wsName); }
+			this.wsURL = uddiNaming.lookup(wsName);
+			
+			if (this.wsURL == null) {
+				if (verbose) { System.out.println("Not found!"); }
+				return;
+			}
+			else { if (verbose) { System.out.println( "Found %s%n" + wsURL); } }
+		}
+		catch (UDDINamingException uNE) {
+			if (verbose) { System.out.println("Caught UDDINamingException while doing lookup() on uddiNamingObj!"); }
+		}
+	}
 
 	/** Stub creation and configuration */
 	private void createStub() {
