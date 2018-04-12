@@ -2,6 +2,9 @@ package org.binas.domain;
 
 public class BinasManager {
 
+	/** Station identifier. */
+	private String id;
+
 	// Singleton -------------------------------------------------------------
 
 	private BinasManager() {
@@ -19,6 +22,9 @@ public class BinasManager {
 		return SingletonHolder.INSTANCE;
 	}
 
+ 	public void setId(String id) {
+ 		this.id = id;
+ 	}
 	
 	// TODO
 
