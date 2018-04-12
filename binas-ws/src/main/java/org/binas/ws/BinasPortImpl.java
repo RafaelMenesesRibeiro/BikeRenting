@@ -4,6 +4,12 @@ import java.util.List;
 
 import javax.jws.WebService;
 
+//import org.binas.station.ws.cli.*;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+
+
+
 /**
  * This class implements the Web Service port type (interface). The annotations
  * below "map" the Java class to the WSDL definitions.
@@ -54,6 +60,26 @@ public class BinasPortImpl implements BinasPortType {
 
     @Override
     public String testPing(String inputMessage) {
+       /*
+        UDDINNaming uddiNaming =  this.endpointManager.getUddiNaming();
+
+        String baseName = "T01_Station";
+        int i = 1;
+        while (true) {
+            try {
+                String newName = baseName + Integer.toString(i);
+                String wsURL = uddiNaming.lookup(newName);
+                StationClient stationClient = new StationClient(wsURL);
+                System.out.println(stationClient.testPing(inputMessage));
+                i++;
+            }
+            catch (UDDINamingException une) {
+                if (verbose) { System.out.println("Caught UDDINamingException while doing lookup() on uddiNamingObj!"); }
+                break;
+            }
+        }
+        */
+
         return null;
     }
 
