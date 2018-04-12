@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.jws.WebService;
 
-//import org.binas.station.ws.cli.*;
+import org.binas.station.ws.cli.*;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
@@ -60,8 +60,8 @@ public class BinasPortImpl implements BinasPortType {
 
     @Override
     public String testPing(String inputMessage) {
-       /*
-        UDDINNaming uddiNaming =  this.endpointManager.getUddiNaming();
+       
+        UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
 
         String baseName = "T01_Station";
         int i = 1;
@@ -74,13 +74,12 @@ public class BinasPortImpl implements BinasPortType {
                 i++;
             }
             catch (UDDINamingException une) {
-                if (verbose) { System.out.println("Caught UDDINamingException while doing lookup() on uddiNamingObj!"); }
-                break;
+                System.out.println(une);
+            }
+            catch (StationClientException sce) {
+                System.out.println(sce);
             }
         }
-        */
-
-        return null;
     }
 
     @Override
