@@ -54,13 +54,11 @@ public class BinasPortImpl implements BinasPortType {
 		try { list = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%"); }
 		catch (UDDINamingException une) { une.getMessage(); }
 
-		int j = 0;
 		for (UDDIRecord uddiRecord : list) {
 			try {
 				StationClient stationClient = new StationClient(uddiRecord.getUrl());
 				StationView view = converter2BinasStationView(stationClient.getInfo());
 				response.add(view);
-				j++;
 			}
 			catch (StationClientException sce) { continue; }
 		}
