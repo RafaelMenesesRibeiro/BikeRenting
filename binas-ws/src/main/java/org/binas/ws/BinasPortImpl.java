@@ -65,27 +65,32 @@ public class BinasPortImpl implements BinasPortType {
 
         String baseName = "T01_Station";
         int i = 1;
+        String wsURL = null;
+        String newName = null;
         while (true) {
             try {
-                String newName = baseName + Integer.toString(i);
-                String wsURL = uddiNaming.lookup(newName);
-                StationClient stationClient = new StationClient(wsURL);
-                System.out.println(stationClient.testPing(inputMessage));
-                i++;
-            }
-            catch (UDDINamingException une) {
+                newName = baseName + Integer.toString(i);
+                wsURL = uddiNaming.lookup(newName);
+            } catch (UDDINamingException une) {
                 System.out.println(une);
+                break;
+            } try {
+                StationClient stationClient = new StationClient(wsURL);
+                System.out.println(stationClient.testPing(newName));
+                i++;
             }
             catch (StationClientException sce) {
                 System.out.println(sce);
             }
         }
+
+        return null;
     }
 
     @Override
     public void testClear() {
 
-    };
+    }
 
     @Override
     public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
