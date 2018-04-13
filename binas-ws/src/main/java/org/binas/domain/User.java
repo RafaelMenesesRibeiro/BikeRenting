@@ -15,9 +15,9 @@ public class User {
 
 	public User(String email, int credit) throws EmailExistsException, InvalidEmailException, UserException {
 		try {
-			checkEmail(email);
+			this.checkEmail(email);
 			this.email = email;
-			setCredit(credit);
+			this.setCredit(credit);
 			BinasManager.addUser(this);
 		}
 		catch (EmailExistsException eee) { throw eee; }
@@ -27,45 +27,27 @@ public class User {
 	}
 	//verificar nos testes se email nao e null(=null), se nao e string vazia(""), se tem espaços a frente ou a tras (trim) do email e garantir que é um email (matches).
 
-	public String getEmail(){
-		return this.email;
-	}
-
-	public int getCredit(){
-		return credit;
-	}
-
-	public boolean getHasBike(){
-		return hasBike;
-	}
+	public String getEmail() { return this.email; }
+	public int getCredit(){ return credit; }
+	public boolean getHasBike() { return hasBike; }
 
 	public void setCredit(int credit) throws UserException {
-		if (credit < 0) {
-			throw new UserException("O Saldo não pode ser negativo");
-		} else { 
-			this.credit = credit;
-		}
-
+		if (credit < 0) { throw new UserException("O Saldo não pode ser negativo"); }
+		else { this.credit = credit; }
 	}
 
-	public void setHasBike(boolean b){
-		this.hasBike = b;
-	}
+	public void setHasBike(boolean b) { this.hasBike = b; }
 
 	private void checkEmail(String email) throws EmailExistsException, InvalidEmailException {
 		BinasManager manager = BinasManager.getInstance();
 		if (manager.userExists(email)) {
 			throw new EmailExistsException("User already exists");
 		}
-		if (email == null) {
-			throw new InvalidEmailException("O e-mail não pode ser null");
-		}
+		if (email == null) { throw new InvalidEmailException("Tried to create a User with null email."); }
 		email.trim();
-		if (email == "") { 
-			throw new InvalidEmailException("O e-mail não pode ser uma string vazia");
-		}
+		if (email == "") {  throw new InvalidEmailException("Tried to create a User with an empty email."); }
 		else if (!email.matches(emailFormat)) { 
-			throw new InvalidEmailException("O e-mail tem de seguir o formato abc@gmail.com por exemplo");
+			throw new InvalidEmailException("Tried to create a User with an incorrect formated email (correct example: abc@gmail.com)"); 
 		}
 		return;
 	}
