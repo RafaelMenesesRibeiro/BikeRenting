@@ -33,7 +33,7 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
-		/*
+		
 		UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
 		ArrayList<UDDIRecord> list = null;
 		List<StationView> response = new ArrayList<StationView>();
@@ -46,7 +46,7 @@ public class BinasPortImpl implements BinasPortType {
 			StationClient stationClient = null;
 			try {
 				stationClient = new StationClient(uddiRecord.getUrl());
-				StationView view = (StationView) stationClient.getInfo();
+				StationView view = converter2BinasStationView(stationClient.getInfo());
 				response.add(view);
 			}
 			catch (StationClientException sce) {
@@ -54,8 +54,6 @@ public class BinasPortImpl implements BinasPortType {
 			}
 		}
 		return response;
-		*/
-		return null;
 	}
 
 	@Override
@@ -167,5 +165,24 @@ public class BinasPortImpl implements BinasPortType {
 	@Override
 	public void testInit(int userInitialPoints) throws BadInit_Exception {
 
-	}
+    }
+    
+    public StationView converter2BinasStationView(org.binas.station.ws.StationView stationView) {
+        StationView binasStationView = new StationView();
+        binasStationView.setId(stationView.getId());
+        binasStationView.setCoordinate(converter2BinasCoordinatesView(stationView.getCoordinate()));
+        binasStationView.setCapacity(stationView.getCapacity());
+        binasStationView.setTotalGets(stationView.getTotalGets());
+        binasStationView.setTotalReturns(stationView.getTotalReturns());
+        binasStationView.setAvailableBinas(stationView.getAvailableBinas());
+        binasStationView.setFreeDocks(stationView.getFreeDocks());
+        return binasStationView;
+    }
+
+    public CoordinatesView converter2BinasCoordinatesView(org.binas.station.ws.CoordinatesView coordinatesView) {
+        CoordinatesView binasCoordinatesView = new CoordinatesView();
+        binasCoordinatesView.setX(coordinatesView.getX());
+        binasCoordinatesView.setY(coordinatesView.getY());
+        return binasCoordinatesView;
+    }
 }
