@@ -56,6 +56,7 @@ public class BinasClientApp {
 			List<StationView> list = client.listStations(1, c);
 			for (StationView v : list) {
 				client.rentBina(v.getId(), "a@test.com");
+				client.returnBina(v.getId(), "a@test.com");
 			}
 		}
 		catch (Exception e) { System.out.println(e.getMessage()); }
