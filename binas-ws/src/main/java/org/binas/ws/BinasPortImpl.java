@@ -7,6 +7,10 @@ import java.util.List;
 import javax.jws.WebService;
 
 import org.binas.station.ws.cli.*;
+import org.binas.domain.BinasManager;
+import org.binas.domain.User;
+import org.binas.exception.UserException;
+
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
@@ -98,22 +102,28 @@ public class BinasPortImpl implements BinasPortType {
 	public void rentBina(String stationID, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
 		/*
 		try {
-			//TODO: Chck if Client exists.
-			//throw new UserNotExists_Exception();
-			//TODO: Check if Client already has bike.
-			//throw new AlreadyHasBina_Exception();
-			//TODO: Check if Client has credit.
-			//throw new NoCredit_Exception();
+			User user = BinasManager.getUser(email);
+			if (user.getHasBike()) { throw new AlreadyHasBina_Exception("User already has a bike.", new AlreadyHasBina()); }
+			if (user.getCredit() < 1) { throw new NoCredit_Exception("User doesn't have enough credit to rent a bike.", new NoCredit()); }
+			
 			StationClient station = this.getStation(stationID);
 			station.getBina();
-			//TODO: Client now has bike.
+			
+			user.setHasBike(true);
+			System.out.println("Bina rented.");
+		}
+		catch (StationClientException sce) {
+			throw new InvalidStation_Exception("Caught StationClientException while trying to rent a Bina.", new InvalidStation());
+		}
+		catch (UserException ue) {
+			System.out.println(ue.getMessage());
+			throw new UserNotExists_Exception("Caught UserException while trying to rent a Bina.", new UserNotExists());
 		}
 		catch (UDDINamingException une) {
 			throw new InvalidStation_Exception("Caught UDDINamingException while doing lookup() on stationClient!", new InvalidStation());
 		}
-		catch (NoBinaAvail_Exception nbae) {
+		catch (org.binas.station.ws.NoBinaAvail_Exception nbae) {
 			throw new NoBinaAvail_Exception("Caught NoBinaAvail_Exception while trying to rent a Bina on stationClient", new NoBinaAvail());
-			//TODO.
 		}
 		*/
 	}
@@ -134,6 +144,8 @@ public class BinasPortImpl implements BinasPortType {
 			else {
 				//TODO: Add bonus to Client's credit.
 			}
+
+			//Set hasBike to false.
 		}
 		catch (UDDINamingException une) {
 			throw new InvalidStation_Exception("Caught UDDINamingException while doing lookup() on StationClient!", new InvalidStation());
