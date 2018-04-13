@@ -15,6 +15,7 @@ public class User {
 		checkEmail(email);
 		this.email = email;
 		setCredit(credit);
+		BinasManager.addUser(this);
 	}
 	//verificar nos testes se email nao e null(=null), se nao e string vazia(""), se tem espaços a frente ou a tras (trim) do email e garantir que é um email (matches).
 
@@ -44,15 +45,20 @@ public class User {
 	}
 
 	private void checkEmail(String email) throws UserException {
-		if (email == null){
+		BinasManager manager = BinasManager.getInstance();
+		if (manager.userExists(email)) {
+			throw new UserException("User already exists");
+		}
+		if (email == null) {
 			throw new UserException("O e-mail não pode ser null");
 		}
 		email.trim();
-		if (email == ""){
+		if (email == "") { 
 			throw new UserException("O e-mail não pode ser uma string vazia");
-		} else if (!email.matches(emailFormat)) {
+		}
+		else if (!email.matches(emailFormat)) { 
 			throw new UserException("O e-mail tem de seguir o formato abc@gmail.com por exemplo");
 		}
+		return;
 	}
-
 }
