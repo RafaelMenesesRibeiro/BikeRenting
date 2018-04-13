@@ -42,32 +42,8 @@ public class BinasClientApp {
 			client = new BinasClient(uddiURL, wsName);
 		}
 
-		// the following remote invocations are just basic examples
-		// the actual tests are made using JUnit
-
-		//System.out.println("Invoke ping()...");
-		//String result = client.testPing("client");
-		//System.out.print(result);
-		CoordinatesView c = new CoordinatesView();
-		c.setX(10);
-		c.setY(11);
-		try {
-			client.testClear();
-			client.activateUser("a@test.com");
-			List<StationView> list = client.listStations(1, c);
-			for (StationView v : list) {
-				System.out.println("Credit before rent: " + client.getCredit("a@test.com"));
-				client.rentBina(v.getId(), "a@test.com");
-				System.out.println("Credit after rent: " + client.getCredit("a@test.com"));
-				client.returnBina(v.getId(), "a@test.com");
-				System.out.println("Credit after return: " + client.getCredit("a@test.com"));
-			}
-
-			list = client.listStations(3, c);
-			for (StationView v2 : list) {
-				System.out.println(v2.getId() + " " + v2.getCoordinate().getX() + ", " + v2.getCoordinate().getY());
-			}
-		}
-		catch (Exception e) { System.out.println(e.getMessage()); }
+		System.out.println("Invoke ping()...");
+		String result = client.testPing("client");
+		System.out.print(result);
 	 }
 }
