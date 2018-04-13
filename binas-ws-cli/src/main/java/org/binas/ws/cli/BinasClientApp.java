@@ -52,6 +52,7 @@ public class BinasClientApp {
 		c.setX(10);
 		c.setY(11);
 		try {
+			client.testClear();
 			client.activateUser("a@test.com");
 			List<StationView> list = client.listStations(1, c);
 			for (StationView v : list) {
@@ -62,7 +63,7 @@ public class BinasClientApp {
 				System.out.println("Credit after return: " + client.getCredit("a@test.com"));
 			}
 
-			list = client.listStations(2, c);
+			list = client.listStations(3, c);
 			for (StationView v2 : list) {
 				System.out.println(v2.getId() + " " + v2.getCoordinate().getX() + ", " + v2.getCoordinate().getY());
 			}

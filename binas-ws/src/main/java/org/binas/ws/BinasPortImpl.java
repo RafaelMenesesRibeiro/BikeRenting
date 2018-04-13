@@ -105,7 +105,6 @@ public class BinasPortImpl implements BinasPortType {
 		try {
 			StationClient station = this.getStation(stationID);
 			StationView view = converter2BinasStationView(station.getInfo());
-			System.out.println(view.getId());
 			return view;
 		}
 		catch (UDDINamingException une) {
