@@ -3,6 +3,11 @@ package org.binas.ws;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Collections;
+import java.util.Map.Entry;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Comparator;
 
 import javax.jws.WebService;
 
@@ -67,24 +72,31 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
-		
 		UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
 		ArrayList<UDDIRecord> list = null;
 		List<StationView> response = new ArrayList<StationView>();
+		Map<StationView, Float> stations = new HashMap<StationView, Float>();
 		try { list = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%"); }
 		catch (UDDINamingException une) { une.getMessage(); }
 
-		int j = 0;
 		for (UDDIRecord uddiRecord : list) {
 			try {
 				StationClient stationClient = new StationClient(uddiRecord.getUrl());
 				StationView view = converter2BinasStationView(stationClient.getInfo());
-				response.add(view);
-				j++;
-				if (j == numberOfStations) { return response; }
+				CoordinatesView cds = view.getCoordinate();
+				float distanceSquared = (cds.getY() - coordinates.getY()) * (cds.getY() - coordinates.getY()) + (cds.getX() - coordinates.getX()) * (cds.getX() - coordinates.getX());
+				stations.put(view, distanceSquared);
 			}
 			catch (StationClientException sce) { continue; }
 		}
+
+		List<Entry<StationView, Float>> unsortedList = new ArrayList<Entry<StationView, Float>>(stations.entrySet());
+		Collections.sort(unsortedList, new Comparator<Map.Entry<StationView, Float>>() {
+			public int compare(Map.Entry<StationView, Float> el1, Map.Entry<StationView, Float> el2 ) {
+				return (el2.getValue()).compareTo(el1.getValue());
+			}
+		});
+		for (int j = 0; j < numberOfStations; j++) { response.add(unsortedList.get(j).getKey()); }
 		return response;
 	}
 
