@@ -221,6 +221,7 @@ public class BinasPortImpl implements BinasPortType {
 				StationClient station = this.getStation(id);
 				station.testClear();	
 			}
+			BinasManager.clearUsers();
 		}
 		catch (UDDINamingException une) { System.out.println(une.getMessage()); }
 		catch (StationClientException sce) { System.out.println(sce.getMessage()); }

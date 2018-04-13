@@ -43,6 +43,10 @@ public class BinasManager {
  		throw new UserException("No user found in BinasManager.");
  	}
 
+ 	public static void clearUsers() {
+ 		users.clear();
+ 	}
+
  	public boolean userExists(String email) {
  		try { 
  			this.getUser(email);
