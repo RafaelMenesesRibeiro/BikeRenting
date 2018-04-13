@@ -7,18 +7,19 @@ public class User {
 	/** Station identifier. */
 	private String email;
 	private int credit;
-	private String emailFormat = "[a-zA-Z0-9'.''_''-']+@[a-zA-z0-9]+'.'[a-zA-z]+";
+	private String emailFormat = "abc@gmail.com";
 	private boolean hasBike = false;
 
 
-	public User(String email, int credit) {
-		setEmail(email);
+	public User(String email, int credit) throws UserException {
+		checkEmail(email);
+		this.email = email;
 		setCredit(credit);
 	}
 	//verificar nos testes se email nao e null(=null), se nao e string vazia(""), se tem espaços a frente ou a tras (trim) do email e garantir que é um email (matches).
 
 	public String getEmail(){
-		return email;
+		return this.email;
 	}
 
 	public int getCredit(){
@@ -27,15 +28,6 @@ public class User {
 
 	public boolean getHasBike(){
 		return hasBike;
-	}
-
-	public void setEmail(String email){
-		try {
-			checkEmail(email.trim());
-		} catch (UserException u){
-			System.out.println(u.getMessage());
-			return;
-		}
 	}
 
 	public void setCredit(int credit){
@@ -54,12 +46,12 @@ public class User {
 	private void checkEmail(String email) throws UserException {
 		if (email == null){
 			throw new UserException("O e-mail não pode ser null");
-		} else if (email == ""){
+		}
+		email.trim();
+		if (email == ""){
 			throw new UserException("O e-mail não pode ser uma string vazia");
 		} else if (!email.matches(emailFormat)) {
 			throw new UserException("O e-mail tem de seguir o formato abc@gmail.com por exemplo");
-		} else {
-			this.email = email;
 		}
 	}
 
