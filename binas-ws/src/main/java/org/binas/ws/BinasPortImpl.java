@@ -114,6 +114,7 @@ public class BinasPortImpl implements BinasPortType {
 			StationClient station = this.getStation(stationID);
 			station.getBina();
 
+			user.setCredit(user.getCredit() - 1);
 			user.setHasBike(true);
 		}
 		catch (StationClientException sce) {
