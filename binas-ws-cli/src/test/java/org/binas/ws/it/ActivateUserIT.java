@@ -1,6 +1,5 @@
 package org.binas.ws.it;
 
-import org.binas.station.ws.*;
 import org.binas.ws.EmailExists_Exception;
 import org.binas.ws.InvalidEmail_Exception;
 import org.junit.Test;
@@ -146,5 +145,10 @@ public class ActivateUserIT extends BaseIT {
             Assert.fail();
         } catch (InvalidEmail_Exception iee) {
         }
+    }
+
+    @After
+    public void tearDown() {
+        client.testClear();
     }
 }
