@@ -123,7 +123,6 @@ public class BinasPortImpl implements BinasPortType {
 			throw new NoBinaAvail_Exception("Caught NoBinaAvail_Exception while trying to rent a Bina on stationClient", new NoBinaAvail());
 		}
 		catch (UserException ue) {
-			System.out.println(ue.getMessage());
 			throw new UserNotExists_Exception("Caught UserException while trying to rent a Bina.", new UserNotExists());
 		}
 		catch (UDDINamingException une) {
@@ -133,27 +132,28 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void returnBina(String stationID, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
-		/*
 		try {
-			//TODO: Chck if Client exists.
-			//throw new UserNotExists_Exception();
-			//TODO: Check if Client already has bike.
-			//throw new NoBinaRented_Exception();
+			User user = BinasManager.getUser(email);
+			if (!user.getHasBike()) { throw new NoBinaRented_Exception("User doesn't have a bike to return.", new NoBinaRented()); }
+			
 			StationClient station = this.getStation(stationID);
 			int bonus = station.returnBina();
-			if (bonus == -1) {
-				throw new FullStation_Exception("Caught FullStation_Exception while trying to return Bina to stationClient", new FullStation());
-			}
-			else {
-				//TODO: Add bonus to Client's credit.
-			}
 
-			//Set hasBike to false.
+			user.setHasBike(false);
+			user.setCredit(user.getCredit() + bonus);
+		}
+		catch (StationClientException sce) {
+			throw new InvalidStation_Exception("Caught StationClientException while trying to return a Bina.", new InvalidStation());
+		}
+		catch (org.binas.station.ws.NoSlotAvail_Exception nsae) {
+			throw new FullStation_Exception("Tried to return bike in a station with no free slots", new FullStation());
+		}
+		catch (UserException ue) {
+			throw new UserNotExists_Exception("Caught UserException while trying to return a Bina.", new UserNotExists());
 		}
 		catch (UDDINamingException une) {
-			throw new InvalidStation_Exception("Caught UDDINamingException while doing lookup() on StationClient!", new InvalidStation());
+			throw new InvalidStation_Exception("Caught UDDINamingException while doing lookup() on stationClient!", new InvalidStation());
 		}
-		*/
 	}
 
 	@Override
