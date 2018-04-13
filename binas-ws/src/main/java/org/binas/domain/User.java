@@ -32,7 +32,7 @@ public class User {
 	public boolean getHasBike() { return hasBike; }
 
 	public void setCredit(int credit) throws UserException {
-		if (credit < 0) { throw new UserException("O Saldo não pode ser negativo"); }
+		if (credit < 0) { throw new UserException("Tried to set User's credit to a negative value."); }
 		else { this.credit = credit; }
 	}
 
