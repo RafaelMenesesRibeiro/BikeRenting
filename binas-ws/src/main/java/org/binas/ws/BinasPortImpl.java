@@ -161,7 +161,6 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public String testPing(String inputMessage) {
-	   
 		String out = "";
 		UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
 		ArrayList<UDDIRecord> col = null;
@@ -185,7 +184,18 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testClear() {
-
+		/*
+		try {
+			List<StationView> stations = this.listAllStations();
+			for (StationView view : stations) {
+				String id = view.getId();
+				StationClient station = this.getStation(id);
+				station.testClear();	
+			}
+		}
+		catch (UDDINamingException une) { System.out.println(une.getMessage()); }
+		catch (StationClientException sce) { System.out.println(sce.getMessage()); }
+		*/
 	}
 
 	@Override
