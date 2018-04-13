@@ -25,7 +25,6 @@ public class User {
 		catch (UserException ue) { throw ue; }
 		
 	}
-	//verificar nos testes se email nao e null(=null), se nao e string vazia(""), se tem espaços a frente ou a tras (trim) do email e garantir que é um email (matches).
 
 	public String getEmail() { return this.email; }
 	public int getCredit(){ return credit; }
@@ -44,7 +43,7 @@ public class User {
 			throw new EmailExistsException("User already exists");
 		}
 		if (email == null) { throw new InvalidEmailException("Tried to create a User with null email."); }
-		email.trim();
+		email = email.trim();
 		if (email == "") {  throw new InvalidEmailException("Tried to create a User with an empty email."); }
 		else if (!email.matches(emailFormat)) { 
 			throw new InvalidEmailException("Tried to create a User with an incorrect formated email (correct example: abc@gmail.com)"); 
