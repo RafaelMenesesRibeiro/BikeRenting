@@ -31,27 +31,36 @@ public class BinasPortImpl implements BinasPortType {
 		this.endpointManager = endpointManager;
 	}
 
+	public StationClient getStation(String stationID) throws UDDINamingException, StationClientException {
+		try {
+			UDDINaming uddiNaming = this.endpointManager.getUddiNaming();
+			String wsURL = uddiNaming.lookup(stationID);
+			return new StationClient(wsURL);
+		}
+		catch (UDDINamingException une) {
+			return null;
+		}
+		catch (StationClientException sce) {
+			throw new StationClientException();
+		}
+	}
+
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
 		
 		UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
 		ArrayList<UDDIRecord> list = null;
 		List<StationView> response = new ArrayList<StationView>();
-		try {
-			list = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%");
-		}
+		try { list = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%"); }
 		catch (UDDINamingException une) {  }
 
 		for (UDDIRecord uddiRecord : list) {
-			StationClient stationClient = null;
 			try {
-				stationClient = new StationClient(uddiRecord.getUrl());
+				StationClient stationClient = new StationClient(uddiRecord.getUrl());
 				StationView view = converter2BinasStationView(stationClient.getInfo());
 				response.add(view);
 			}
-			catch (StationClientException sce) {
-				continue;
-			}
+			catch (StationClientException sce) { continue; }
 		}
 		return response;
 	}
