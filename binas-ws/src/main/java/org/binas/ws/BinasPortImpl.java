@@ -100,6 +100,14 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void rentBina(String stationID, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
+		try {
+			User user = BinasManager.getUser(email);
+			System.out.println("email" + user.getEmail());
+		}
+
+		catch (Exception e) {
+			System.out.println("erro" + e.getMessage());	
+		}
 		/*
 		try {
 			User user = BinasManager.getUser(email);

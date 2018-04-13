@@ -2,6 +2,7 @@ package org.binas.ws.cli;
 
 import org.binas.ws.*;
 
+import org.binas.domain.BinasManager;
 import org.binas.domain.User;
 
 import java.util.List;
@@ -50,15 +51,18 @@ public class BinasClientApp {
 		CoordinatesView c = new CoordinatesView();
 		c.setX(10);
 		c.setY(11);
-		/*
-		User u = new User("a@test.com", 10);
-		List<StationView> list = client.listStations(1, c);
-		for (StationView v : list) {
-			String id = v.getId();
-			System.out.println(id);
-			client.rentBina(id, u.getEmail());
-		}       
-		*/
+
+		try {
+			User u = new User("a@test.com", 10);
+			List<StationView> list = client.listStations(1, c);
+			for (StationView v : list) {
+				User u2 = BinasManager.getUser("a@test.com");
+				System.out.println(u2.getEmail());
+				client.rentBina(v.getId(), u.getEmail());
+			}
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 	 }
 }
-
