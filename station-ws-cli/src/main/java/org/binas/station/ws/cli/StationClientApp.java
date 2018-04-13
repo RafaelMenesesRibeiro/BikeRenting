@@ -22,19 +22,6 @@ public class StationClientApp {
 
 		System.out.println(StationClientApp.class.getSimpleName() + " running");
 
-		/*
-		int i = 1;
-		while (true) {
-			try {
-				String wsName = ;
-			}
-			catch {
-
-			}
-		}
-		*/
-
-
 		// Create client.
 		StationClient client = null;
 
