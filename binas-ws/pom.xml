@@ -17,7 +17,7 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<mainclass>org.binas.ws.BinasApp</mainclass>
-        <uddi.url>http://uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
+        <uddi.url>http://t01:b9jPmdO@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
 		<group.id>T01</group.id>
 
 		<ws.name>${group.id}_Binas</ws.name>

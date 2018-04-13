@@ -1,5 +1,7 @@
 package org.binas.ws;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.jws.WebService;
@@ -7,6 +9,7 @@ import javax.jws.WebService;
 import org.binas.station.ws.cli.*;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDIRecord;
 
 
 
@@ -61,30 +64,25 @@ public class BinasPortImpl implements BinasPortType {
     @Override
     public String testPing(String inputMessage) {
        
+        String out = "";
         UDDINaming uddiNaming =  this.endpointManager.getUddiNaming();
+        ArrayList<UDDIRecord> col = null;
+        try{
+            col = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%");
+        } catch (UDDINamingException une) {
 
-        String baseName = "T01_Station";
-        int i = 1;
-        String wsURL = null;
-        String newName = null;
-        while (true) {
-            try {
-                newName = baseName + Integer.toString(i);
-                wsURL = uddiNaming.lookup(newName);
-            } catch (UDDINamingException une) {
-                System.out.println(une);
-                break;
-            } try {
-                StationClient stationClient = new StationClient(wsURL);
-                System.out.println(stationClient.testPing(newName));
-                i++;
-            }
-            catch (StationClientException sce) {
-                System.out.println(sce);
-            }
         }
 
-        return null;
+        for (UDDIRecord uddiRecord : col) {
+            StationClient stationClient = null;
+            try {
+                stationClient = new StationClient(uddiRecord.getUrl());
+                out += stationClient.testPing("HELLOLLL") + '\n';
+            } catch (StationClientException sce) {
+                continue;
+            }
+        }
+        return out;
     }
 
     @Override
