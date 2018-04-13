@@ -55,8 +55,11 @@ public class BinasClientApp {
 			client.activateUser("a@test.com");
 			List<StationView> list = client.listStations(1, c);
 			for (StationView v : list) {
+				System.out.println("Credit before rent: " + client.getCredit("a@test.com"));
 				client.rentBina(v.getId(), "a@test.com");
+				System.out.println("Credit after rent: " + client.getCredit("a@test.com"));
 				client.returnBina(v.getId(), "a@test.com");
+				System.out.println("Credit after return: " + client.getCredit("a@test.com"));
 			}
 		}
 		catch (Exception e) { System.out.println(e.getMessage()); }
