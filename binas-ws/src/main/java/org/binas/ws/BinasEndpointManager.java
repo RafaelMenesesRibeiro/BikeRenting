@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.ws.Endpoint;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 /** The endpoint manager starts and registers the service. */
 public class BinasEndpointManager {
@@ -54,6 +55,7 @@ public class BinasEndpointManager {
 
     /** constructor with provided UDDI location, WS name, and WS URL */
     public BinasEndpointManager(String uddiURL, String wsName, String wsURL) {
+        System.out.println(wsName);
         this.uddiURL = uddiURL;
         this.wsName = wsName;
         this.wsURL = wsURL;
@@ -71,6 +73,7 @@ public class BinasEndpointManager {
         try {
             // publish end point
             endpoint = Endpoint.create(this.portImpl);
+            uddiNaming = new UDDINaming(uddiURL);
             if (verbose) {
                 System.out.printf("Starting %s%n", wsURL);
             }
@@ -121,11 +124,24 @@ public class BinasEndpointManager {
     /* UDDI */
 
     void publishToUDDI() throws Exception {
-        // TODO
+        if (verbose)
+            System.out.printf("Publishing '%s' to UDDI at %s%n", wsName, uddiURL);
+        try {
+            uddiNaming = new UDDINaming(uddiURL);
+            uddiNaming.rebind(wsName, wsURL);
+        } catch (UDDINamingException une) {
+            System.err.println(une.getMessage());
+        }
     }
 
     void unpublishFromUDDI() {
-        // TODO
+        try {
+            uddiNaming.unbind(wsName);
+            if (verbose)
+                System.out.printf("Deleted '%s' from UDDI%n", wsName);
+        } catch (UDDINamingException une) {
+            System.err.println(une.getMessage());
+        }
     }
 
 }

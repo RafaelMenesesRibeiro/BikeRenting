@@ -17,10 +17,10 @@ public class StationApp {
 		}
 		String wsName = args[0];
 		String wsURL = args[1];
-		
+		String uddiURL = args[2];
 		// TODO handle UDDI arguments
 
-		StationEndpointManager endpoint = new StationEndpointManager(wsName, wsURL);
+		StationEndpointManager endpoint = new StationEndpointManager(wsName, wsURL, uddiURL);
 		Station.getInstance().setId(wsName);
 
 		System.out.println(StationApp.class.getSimpleName() + " running");
