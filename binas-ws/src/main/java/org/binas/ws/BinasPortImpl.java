@@ -43,12 +43,8 @@ public class BinasPortImpl implements BinasPortType {
 			String wsURL = uddiNaming.lookup(stationID);
 			return new StationClient(wsURL);
 		}
-		catch (UDDINamingException une) {
-			return null;
-		}
-		catch (StationClientException sce) {
-			throw new StationClientException();
-		}
+		catch (UDDINamingException une) { return null; }
+		catch (StationClientException sce) { throw new StationClientException(); }
 	}
 
 	@Override
@@ -91,7 +87,7 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public int getCredit(String email) throws UserNotExists_Exception {
+	public synchronized int getCredit(String email) throws UserNotExists_Exception {
 		try {
 			User user = BinasManager.getUser(email);
 			return user.getCredit();
@@ -102,7 +98,7 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
+	public synchronized UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
 		try { new User(email, 10); }
 		catch (InvalidEmailException iee) { throw new InvalidEmail_Exception("Invalid email", new InvalidEmail()); }
 		catch (EmailExistsException eee) { throw new EmailExists_Exception("Email exists", new EmailExists()); }
@@ -111,7 +107,7 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public void rentBina(String stationID, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
+	public synchronized void rentBina(String stationID, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
 		try {
 			User user = BinasManager.getUser(email);
 			if (user.getHasBike()) { throw new AlreadyHasBina_Exception("User already has a bike.", new AlreadyHasBina()); }
@@ -138,7 +134,7 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	@Override
-	public void returnBina(String stationID, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
+	public synchronized void returnBina(String stationID, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
 		try {
 			User user = BinasManager.getUser(email);
 			if (!user.getHasBike()) { throw new NoBinaRented_Exception("User doesn't have a bike to return.", new NoBinaRented()); }

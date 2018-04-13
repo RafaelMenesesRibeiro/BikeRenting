@@ -30,12 +30,12 @@ public class User {
 	public int getCredit(){ return credit; }
 	public boolean getHasBike() { return hasBike; }
 
-	public void setCredit(int credit) throws UserException {
+	public synchronized void setCredit(int credit) throws UserException {
 		if (credit < 0) { throw new UserException("Tried to set User's credit to a negative value."); }
 		else { this.credit = credit; }
 	}
 
-	public void setHasBike(boolean b) { this.hasBike = b; }
+	public synchronized void setHasBike(boolean b) { this.hasBike = b; }
 
 	private void checkEmail(String email) throws EmailExistsException, InvalidEmailException {
 		BinasManager manager = BinasManager.getInstance();
