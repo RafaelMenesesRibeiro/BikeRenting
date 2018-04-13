@@ -32,7 +32,7 @@ public class BinasManager {
  		this.id = id;
  	}
 
- 	public static void addUser(User user) {
+ 	public synchronized static void addUser(User user) {
  		users.add(user);
  	}
 
