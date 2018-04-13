@@ -7,17 +7,15 @@ import org.junit.Before;
 import org.junit.After;
 import org.junit.Assert;
 
-/**
- * Class that tests Ping operation
- */
+
 public class ActivateUserIT extends BaseIT {
 
     @Before
     public void setUp() {
         try {
             client.testInitStation("T01_Station1", 27, 7, 6, 2);
-            client.testInitStation("T01_Station2", 27, 7, 6, 2);
-            client.testInitStation("T01_Station3", 27, 7, 6, 2);    
+            client.testInitStation("T01_Station2", 80, 20, 12, 1);
+            client.testInitStation("T01_Station3", 50, 50, 10, 0);    
         } catch (org.binas.ws.BadInit_Exception bie) {
 
         }
