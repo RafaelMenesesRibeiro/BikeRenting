@@ -51,18 +51,13 @@ public class BinasClientApp {
 		CoordinatesView c = new CoordinatesView();
 		c.setX(10);
 		c.setY(11);
-
 		try {
-			User u = new User("a@test.com", 10);
+			client.activateUser("a@test.com");
 			List<StationView> list = client.listStations(1, c);
 			for (StationView v : list) {
-				User u2 = BinasManager.getUser("a@test.com");
-				System.out.println(u2.getEmail());
-				client.rentBina(v.getId(), u.getEmail());
+				client.rentBina(v.getId(), "a@test.com");
 			}
 		}
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
+		catch (Exception e) { System.out.println(e.getMessage()); }
 	 }
 }
