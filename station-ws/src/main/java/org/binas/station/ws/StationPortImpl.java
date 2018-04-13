@@ -43,7 +43,7 @@ public class StationPortImpl implements StationPortType {
 	
 	/** Return a bike to the station. */
 	@Override
-	public int returnBina() throws NoSlotAvail_Exception {
+	public synchronized int returnBina() throws NoSlotAvail_Exception {
 		try {
 			return Station.getInstance().returnBina();
 		} catch (NoSlotAvailException nse) {
@@ -53,7 +53,7 @@ public class StationPortImpl implements StationPortType {
 	
 	/** Take a bike from the station. */
 	@Override
-	public void getBina() throws NoBinaAvail_Exception {
+	public synchronized void getBina() throws NoBinaAvail_Exception {
 		try {
 			Station.getInstance().getBina();
 		} catch (NoBinaAvailException nse) {}	
