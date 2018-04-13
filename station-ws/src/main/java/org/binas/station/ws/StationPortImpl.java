@@ -4,7 +4,6 @@ import javax.jws.WebService;
 
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
-
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
@@ -14,11 +13,11 @@ import org.binas.station.domain.exception.NoSlotAvailException;
  * below "map" the Java class to the WSDL definitions.
  */
 @WebService(endpointInterface = "org.binas.station.ws.StationPortType",
-wsdlLocation = "StationWebService.wsdl",
-name = "StationWebService",
-portName = "StationPort",
-targetNamespace = "http://ws.station.binas.org/",
-serviceName = "StationService"
+            wsdlLocation = "station.wsdl",
+            name ="StationWebService",
+            portName = "StationPort",
+            targetNamespace="http://ws.station.binas.org/",
+            serviceName = "StationService"
 )
 public class StationPortImpl implements StationPortType {
 
@@ -32,32 +31,45 @@ public class StationPortImpl implements StationPortType {
 	public StationPortImpl(StationEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
 	}
-
+	
 	// Main operations -------------------------------------------------------
-
+	
 	/** Retrieve information about station. */
 	@Override
 	public StationView getInfo() {
-		return buildStationView(Station.getInstance());
-	}
-	
-	/** Return a bike to the station. */
-	@Override
-	public synchronized int returnBina() throws NoSlotAvail_Exception {
-		try {
-			return Station.getInstance().returnBina();
-		} catch (NoSlotAvailException nse) {
-			return -1;
+		// Access the domain root where the station master data is stored.
+		Station station = Station.getInstance();
+		// Create a view (copy) to store the station data in the response.
+		// Acquire station object lock to perform all gets together.
+		synchronized(station) {
+			return buildStationView(station);
 		}
 	}
-	
+
+	/** Return a bike to the station. */
+	@Override
+	public int returnBina() throws NoSlotAvail_Exception {
+		Station station = Station.getInstance();
+		int bonus = 0;
+		try {
+			bonus = station.returnBina();
+		} catch(NoSlotAvailException e) {
+			throwNoSlotAvail("No slot available at this station!");
+		}
+		return bonus;
+	}
+
 	/** Take a bike from the station. */
 	@Override
-	public synchronized void getBina() throws NoBinaAvail_Exception {
+	public void getBina() throws NoBinaAvail_Exception {
+		Station station = Station.getInstance();
 		try {
-			Station.getInstance().getBina();
-		} catch (NoBinaAvailException nse) {}	
+			station.getBina();
+		} catch (NoBinaAvailException e) {
+			throwNoBinaAvail("No Bina available at this station!");
+		}
 	}
+
 
 	// Test Control operations -----------------------------------------------
 
@@ -67,34 +79,32 @@ public class StationPortImpl implements StationPortType {
 		// If no input is received, return a default name.
 		if (inputMessage == null || inputMessage.trim().length() == 0)
 			inputMessage = "friend";
-			
+
 		// If the station does not have a name, return a default.
 		String wsName = endpointManager.getWsName();
 		if (wsName == null || wsName.trim().length() == 0)
 			wsName = "Station";
-		
+
 		// Build a string with a message to return.
 		StringBuilder builder = new StringBuilder();
 		builder.append("Hello ").append(inputMessage);
 		builder.append(" from ").append(wsName);
-			return builder.toString();
+		return builder.toString();
 	}
-		
+
 	/** Return all station variables to default values. */
 	@Override
 	public void testClear() {
 		Station.getInstance().reset();
 	}
-		
+
 	/** Set station variables with specific values. */
 	@Override
 	public void testInit(int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
-			try {
-				Station.getInstance().init(x, y, capacity, returnPrize);
-			}
-			catch (BadInitException e) {
-				System.out.println(e.getMessage());
-				//throw BadInit_Exception("Invalid initialization values!", new BadInit());
+		try {
+			Station.getInstance().init(x, y, capacity, returnPrize);
+		} catch (BadInitException e) {
+			throwBadInit("Invalid initialization values!");
 		}
 	}
 
@@ -103,7 +113,6 @@ public class StationPortImpl implements StationPortType {
 	/** Helper to convert a domain station to a view. */
 	private StationView buildStationView(Station station) {
 		StationView view = new StationView();
-		
 		view.setId(station.getId());
 		view.setCoordinate(buildCoordinatesView(station.getCoordinates()));
 		view.setCapacity(station.getMaxCapacity());
@@ -111,7 +120,6 @@ public class StationPortImpl implements StationPortType {
 		view.setTotalReturns(station.getTotalReturns());
 		view.setFreeDocks(station.getFreeDocks());
 		view.setAvailableBinas(station.getAvailableBinas());
-		
 		return view;
 	}
 
@@ -122,7 +130,7 @@ public class StationPortImpl implements StationPortType {
 		view.setY(coordinates.getY());
 		return view;
 	}
-
+	
 	// Exception helpers -----------------------------------------------------
 
 	/** Helper to throw a new NoBinaAvail exception. */
@@ -138,11 +146,12 @@ public class StationPortImpl implements StationPortType {
 		faultInfo.message = message;
 		throw new NoSlotAvail_Exception(message, faultInfo);
 	}
-	
+
 	/** Helper to throw a new BadInit exception. */
 	private void throwBadInit(final String message) throws BadInit_Exception {
 		BadInit faultInfo = new BadInit();
 		faultInfo.message = message;
 		throw new BadInit_Exception(message, faultInfo);
 	}
+
 }

@@ -1,53 +1,83 @@
 package org.binas.domain;
 
-import org.binas.exception.UserException;
-import org.binas.exception.InvalidEmailException;
-import org.binas.exception.EmailExistsException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.binas.domain.exception.InsufficientCreditsException;
+import org.binas.domain.exception.UserAlreadyHasBinaException;
+import org.binas.domain.exception.UserHasNoBinaException;
+
+/**
+ * 
+ * Domain class that represents the User and deals with their creation, balance manipulation, email manipulation, etc.
+ * 
+ *
+ */
 public class User {
 
-	/** Station identifier. */
 	private String email;
-	private int credit;
-	private String emailFormat = "^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$";
-	private boolean hasBike = false;
+	private AtomicInteger balance;
+	private AtomicBoolean hasBina = new AtomicBoolean(false);
+	
+	public User(String email, int initialBalance) {
+		this.email = email;
+		balance = new AtomicInteger(initialBalance);
+	}
+	
+	public synchronized void decrementBalance() throws InsufficientCreditsException{
+		 if(balance.get() > 0) {
+			 balance.decrementAndGet();
+		 } else {
+			 throw new InsufficientCreditsException();
+		 }
+	}
 
+	
+	public synchronized void incrementBalance(int amount){
+		 balance.getAndAdd(amount);
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+	
+	public boolean getHasBina() {
+		return hasBina.get();
+	}
+	
 
-	public User(String email, int credit) throws EmailExistsException, InvalidEmailException, UserException {
-		try {
-			this.checkEmail(email);
-			this.email = email;
-			this.setCredit(credit);
-			BinasManager.addUser(this);
+	public int getCredit() {
+		return balance.get();
+	}
+
+	public synchronized void validateCanRentBina() throws InsufficientCreditsException, UserAlreadyHasBinaException{
+		if(getHasBina()) {
+			throw new UserAlreadyHasBinaException();
 		}
-		catch (EmailExistsException eee) { throw eee; }
-		catch (InvalidEmailException iee) { throw iee; }
-		catch (UserException ue) { throw ue; }
+		if(getCredit() <= 0) {
+			throw new InsufficientCreditsException();
+		}
 		
 	}
-
-	public String getEmail() { return this.email; }
-	public int getCredit(){ return credit; }
-	public boolean getHasBike() { return hasBike; }
-
-	public synchronized void setCredit(int credit) throws UserException {
-		if (credit < 0) { throw new UserException("Tried to set User's credit to a negative value."); }
-		else { this.credit = credit; }
+	public synchronized void validateCanReturnBina() throws UserHasNoBinaException {
+		if( ! getHasBina()) {
+			throw new UserHasNoBinaException();
+		}
 	}
 
-	public synchronized void setHasBike(boolean b) { this.hasBike = b; }
-
-	private void checkEmail(String email) throws EmailExistsException, InvalidEmailException {
-		BinasManager manager = BinasManager.getInstance();
-		if (manager.userExists(email)) {
-			throw new EmailExistsException("User already exists");
-		}
-		if (email == null) { throw new InvalidEmailException("Tried to create a User with null email."); }
-		email = email.trim();
-		if (email == "") {  throw new InvalidEmailException("Tried to create a User with an empty email."); }
-		else if (!email.matches(emailFormat)) { 
-			throw new InvalidEmailException("Tried to create a User with an incorrect formated email (correct example: abc@gmail.com)"); 
-		}
-		return;
+	public synchronized void effectiveRent() throws InsufficientCreditsException {
+		decrementBalance();
+		hasBina.set(true);
 	}
+
+	public synchronized void effectiveReturn(int prize) throws UserHasNoBinaException {
+		if( ! getHasBina()) {
+			throw new UserHasNoBinaException();
+		}
+		hasBina.set(false);
+		incrementBalance(prize);
+	}
+
+
+	
 }

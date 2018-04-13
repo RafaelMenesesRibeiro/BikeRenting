@@ -1,11 +1,30 @@
 package org.binas.ws.cli;
 
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
-import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
-import org.binas.ws.*;
+
+import org.binas.ws.AlreadyHasBina_Exception;
+import org.binas.ws.BadInit_Exception;
+import org.binas.ws.BinasPortType;
+import org.binas.ws.BinasService;
+import org.binas.ws.CoordinatesView;
+import org.binas.ws.EmailExists_Exception;
+import org.binas.ws.FullStation_Exception;
+import org.binas.ws.InvalidEmail_Exception;
+import org.binas.ws.InvalidStation_Exception;
+import org.binas.ws.NoBinaAvail_Exception;
+import org.binas.ws.NoBinaRented_Exception;
+import org.binas.ws.NoCredit_Exception;
+import org.binas.ws.StationView;
+import org.binas.ws.UserNotExists_Exception;
+import org.binas.ws.UserView;
+
+import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
+
 
 /**
  * Client.
@@ -16,10 +35,10 @@ import org.binas.ws.*;
 public class BinasClient implements BinasPortType {
 
     /** WS service */
-	BinasService service = null;
+    BinasService service = null;
 
     /** WS port (port type is the interface, port is the implementation) */
-	BinasPortType port = null;
+    BinasPortType port = null;
 
     /** UDDI server URL */
     private String uddiURL = null;
@@ -61,74 +80,94 @@ public class BinasClient implements BinasPortType {
 
     /** UDDI lookup */
     private void uddiLookup() throws BinasClientException {
-		// TODO
+        try {
+            if (verbose)
+                System.out.printf("Contacting UDDI at %s%n", uddiURL);
+            UDDINaming uddiNaming = new UDDINaming(uddiURL);
+
+            if (verbose)
+                System.out.printf("Looking for '%s'%n", wsName);
+            wsURL = uddiNaming.lookup(wsName);
+
+        } catch (Exception e) {
+            String msg = String.format("Client failed lookup on UDDI at %s!",
+                    uddiURL);
+            throw new BinasClientException(msg, e);
+        }
+
+        if (wsURL == null) {
+            String msg = String.format(
+                    "Service with name %s not found on UDDI at %s", wsName,
+                    uddiURL);
+            throw new BinasClientException(msg);
+        }
     }
 
     /** Stub creation and configuration */
     private void createStub() {
-		if (verbose)
-			System.out.println("Creating stub ...");
-		service = new BinasService();
-		port = service.getBinasPort();
-		
-		if (wsURL != null) {
-			if (verbose)
-				System.out.println("Setting endpoint address ...");
-			BindingProvider bindingProvider = (BindingProvider) port;
-			Map<String, Object> requestContext = bindingProvider.getRequestContext();
-			requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
-		}
-    }
+        if (verbose)
+            System.out.println("Creating stub ...");
+        service = new BinasService();
+        port = service.getBinasPort();
 
-	// remote invocation methods ----------------------------------------------
+        if (wsURL != null) {
+            if (verbose)
+                System.out.println("Setting endpoint address ...");
+            BindingProvider bindingProvider = (BindingProvider) port;
+            Map<String, Object> requestContext = bindingProvider
+                    .getRequestContext();
+            requestContext.put(ENDPOINT_ADDRESS_PROPERTY, wsURL);
+        }
+    }
 
 	@Override
 	public UserView activateUser(String email) throws EmailExists_Exception, InvalidEmail_Exception {
 		return port.activateUser(email);
 	}
-	
+
 	@Override
 	public StationView getInfoStation(String stationId) throws InvalidStation_Exception {
 		return port.getInfoStation(stationId);
 	}
-	
+
 	@Override
 	public List<StationView> listStations(Integer numberOfStations, CoordinatesView coordinates) {
 		return port.listStations(numberOfStations,coordinates);
 	}
-	
+
 	@Override
-	public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception, NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
+	public void rentBina(String stationId, String email) throws AlreadyHasBina_Exception, InvalidStation_Exception,
+			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
 		port.rentBina(stationId,email);
 	}
-	
+
 	@Override
-	public void returnBina(String stationId, String email) throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
+	public void returnBina(String stationId, String email)
+			throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
 		port.returnBina(stationId,email);
 	}
-	
+
 	@Override
 	public int getCredit(String email) throws UserNotExists_Exception {
 		return port.getCredit(email);
 	}
 
-	// test control operations ------------------------------------------------
-
 	@Override
 	public String testPing(String inputMessage) {
 		return port.testPing(inputMessage);
 	}
-	
+
 	@Override
 	public void testClear() {
 		port.testClear();
 	}
-	
+
 	@Override
-	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
+	public void testInitStation(String stationId, int x, int y, int capacity, int returnPrize)
+			throws BadInit_Exception {
 		port.testInitStation(stationId, x, y, capacity, returnPrize);
 	}
-	
+
 	@Override
 	public void testInit(int userInitialPoints) throws BadInit_Exception {
 		port.testInit(userInitialPoints);

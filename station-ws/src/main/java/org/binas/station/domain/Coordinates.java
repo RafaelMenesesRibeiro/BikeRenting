@@ -1,6 +1,11 @@
 package org.binas.station.domain;
 
-/** Class to store map coordinates. */
+/** 
+ * 
+ * Class that store map coordinates.
+ * 
+ * 
+ */
 public class Coordinates {
 
 	private int x;

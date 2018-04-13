@@ -1,40 +1,80 @@
 package org.binas.station.ws.it;
 
-import org.binas.station.ws.*;
-import org.junit.Test;
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import org.binas.station.ws.BadInit_Exception;
+import org.binas.station.ws.NoBinaAvail_Exception;
+import org.binas.station.ws.StationView;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
- * Class that tests Ping operation
+ * class that tests Bina retrieval
  */
 public class GetBinaIT extends BaseIT {
+	private final static int X = 5;
+	private final static int Y = 5;
+	private final static int CAPACITY = 20;
+	private final static int RETURN_PRIZE = 0;
+	// static members
 
-	@Before
-	public void setUp() {
-		try {
-			client.testInit(27, 7, 6, 2);
-		} catch (BadInit_Exception bie) {
-
-		}
+	// one-time initialization and clean-up
+	@BeforeClass
+	public static void oneTimeSetUp() {
+		
 	}
 
-	@Test
-	public void sucess() {
-		try {
-			client.getBina();
-		} catch (NoBinaAvail_Exception e) {
+	@AfterClass
+	public static void oneTimeTearDown() {
+	}
 
-		}
-		StationView sv = client.getInfo();
-		Assert.assertEquals(5, sv.getAvailableBinas());
-		Assert.assertEquals(1, sv.getFreeDocks());
-		Assert.assertEquals(1, sv.getTotalGets());
+	// members
+
+	// initialization and clean-up for each test
+	@Before
+	public void setUp() throws BadInit_Exception {
+		client.testClear();
+		client.testInit(X, Y, CAPACITY, RETURN_PRIZE);
 	}
 
 	@After
 	public void tearDown() {
-		client.testClear();
 	}
+
+	// main tests
+	// assertEquals(expected, actual);
+
+	/** Try to get a Bina , get one verify, one rented (less). */
+	@Test
+	public void getBinaOneTest() throws NoBinaAvail_Exception, BadInit_Exception {
+		client.getBina();
+
+		StationView view = client.getInfo();
+		assertNotNull(view);
+		assertEquals(CAPACITY - 1, view.getAvailableBinas());
+	}
+	
+	@Test
+	public void getBinaAllTest() throws NoBinaAvail_Exception, BadInit_Exception {
+		for(int i = 0; i < CAPACITY; i++)
+			client.getBina();
+
+		StationView view = client.getInfo();
+		assertNotNull(view);
+		assertEquals(0, view.getAvailableBinas());
+	}
+	
+	/** Try to get a Bina but no Binas available. */
+	@Test(expected = NoBinaAvail_Exception.class)
+	public void getBinaNoBinaTest() throws NoBinaAvail_Exception, BadInit_Exception {
+		for(int i = 0; i <= CAPACITY; i++)
+			client.getBina();
+	}
+
+	
+
 }

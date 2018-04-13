@@ -1,6 +1,10 @@
 package org.binas.station.ws.cli;
 
-/** Exception to be thrown when something is wrong with the client. */
+/** 
+ * 
+ * Exception to be thrown when something is wrong with the client. 
+ * 
+ */
 public class StationClientException extends Exception {
 
 	private static final long serialVersionUID = 1L;

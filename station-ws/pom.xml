@@ -2,8 +2,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
-	<groupId>org.binas.T01</groupId>
+	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
+
+	<!-- Please replace 'CXX' below with your C (campus) with A (Alameda) / 
+		T (Tagus); and your group number with two digits. Then delete this comment. -->
+	<groupId>org.binas.CXX</groupId>
 	<artifactId>station-ws</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -26,17 +29,21 @@
 		<ws.port>808${ws.i}</ws.port>
 		<ws.url>http://${ws.host}:${ws.port}/station-ws/endpoint</ws.url>
 
-		<ws.name>T01_Station${ws.i}</ws.name>
-        <uddi.url>http://t01:b9jPmdO@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
+		<!-- Please replace 'CXX' below with your C (campus) with A (Alameda) / 
+			T (Tagus); and your group number with two digits. Then delete this comment. -->
+		<ws.name>CXX_Station${ws.i}</ws.name>
+		<uddi.url>http://localhost:9090</uddi.url>
 
 	</properties>
 
 	<dependencies>
+		<!-- JAX-WS -->
 		<dependency>
 			<groupId>com.sun.xml.ws</groupId>
 			<artifactId>jaxws-rt</artifactId>
 			<version>2.2.10</version>
 		</dependency>
+		<!-- UDDI Naming -->
 		<dependency>
 			<groupId>pt.ulisboa.tecnico.sdis</groupId>
 			<artifactId>uddi-naming</artifactId>
@@ -82,7 +89,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
-				<version>1.6.0</version>
+                <version>1.6.0</version>
 				<executions>
 					<execution>
 						<goals>
@@ -95,16 +102,16 @@
 					<killAfter>-1</killAfter>
 					<mainClass>${mainclass}</mainClass>
 					<arguments>
+						<argument>${uddi.url}</argument>
 						<argument>${ws.name}</argument>
 						<argument>${ws.url}</argument>
-					    <argument>${uddi.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>appassembler-maven-plugin</artifactId>
-				<version>2.0.0</version>
+                <version>2.0.0</version>
 				<executions>
 					<execution>
 						<phase>install</phase>
