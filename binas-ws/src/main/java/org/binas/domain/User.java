@@ -7,7 +7,7 @@ public class User {
 	/** Station identifier. */
 	private String email;
 	private int credit;
-	private String emailFormat = "abc@gmail.com";
+	private String emailFormat = "^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$";
 	private boolean hasBike = false;
 
 
@@ -30,9 +30,9 @@ public class User {
 		return hasBike;
 	}
 
-	public void setCredit(int credit){
+	public void setCredit(int credit) throws UserException {
 		if (credit < 0) {
-			this.credit = 0;
+			throw new UserException("O Saldo não pode ser negativo");
 		} else { 
 			this.credit = credit;
 		}
