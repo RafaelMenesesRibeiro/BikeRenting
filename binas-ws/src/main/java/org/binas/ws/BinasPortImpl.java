@@ -54,11 +54,14 @@ public class BinasPortImpl implements BinasPortType {
 		try { list = (ArrayList<UDDIRecord>) uddiNaming.listRecords("T01_Station%"); }
 		catch (UDDINamingException une) {  }
 
+		int j = 0;
 		for (UDDIRecord uddiRecord : list) {
 			try {
 				StationClient stationClient = new StationClient(uddiRecord.getUrl());
 				StationView view = converter2BinasStationView(stationClient.getInfo());
 				response.add(view);
+				j++;
+				if (j == numberOfStations) { return response; }
 			}
 			catch (StationClientException sce) { continue; }
 		}
@@ -67,17 +70,18 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public StationView getInfoStation(String stationID) throws InvalidStation_Exception {
-		/*
 		try {
 			StationClient station = this.getStation(stationID);
-			StationView view = station.getInfo();
+			StationView view = converter2BinasStationView(station.getInfo());
+			System.out.println(view.getId());
 			return view;
 		}
 		catch (UDDINamingException une) {
-			throw new InvalidStation_Exception("Caught UDDINamingException while doing lookup() on StationClient!", new InvalidStation());
+			throw new InvalidStation_Exception("Caught UDDINamingException while getting info on StationClient!", new InvalidStation());
 		}
-		*/
-		return null;
+		catch (StationClientException sce) { 
+			throw new InvalidStation_Exception("Caught StationClientException while getting info on StationClient!", new InvalidStation());
+		}
 	}
 
 	@Override
