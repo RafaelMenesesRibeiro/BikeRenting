@@ -202,7 +202,6 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testClear() {
-		/*
 		try {
 			List<StationView> stations = this.listAllStations();
 			for (StationView view : stations) {
@@ -213,7 +212,6 @@ public class BinasPortImpl implements BinasPortType {
 		}
 		catch (UDDINamingException une) { System.out.println(une.getMessage()); }
 		catch (StationClientException sce) { System.out.println(sce.getMessage()); }
-		*/
 	}
 
 	@Override
