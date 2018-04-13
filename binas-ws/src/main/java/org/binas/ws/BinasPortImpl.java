@@ -93,7 +93,7 @@ public class BinasPortImpl implements BinasPortType {
 		List<Entry<StationView, Float>> unsortedList = new ArrayList<Entry<StationView, Float>>(stations.entrySet());
 		Collections.sort(unsortedList, new Comparator<Map.Entry<StationView, Float>>() {
 			public int compare(Map.Entry<StationView, Float> el1, Map.Entry<StationView, Float> el2 ) {
-				return (el2.getValue()).compareTo(el1.getValue());
+				return (el1.getValue()).compareTo(el2.getValue());
 			}
 		});
 		for (int j = 0; j < numberOfStations; j++) { response.add(unsortedList.get(j).getKey()); }
@@ -105,7 +105,6 @@ public class BinasPortImpl implements BinasPortType {
 		try {
 			StationClient station = this.getStation(stationID);
 			StationView view = converter2BinasStationView(station.getInfo());
-			System.out.println(view.getId());
 			return view;
 		}
 		catch (UDDINamingException une) {
@@ -204,7 +203,7 @@ public class BinasPortImpl implements BinasPortType {
 			StationClient stationClient = null;
 			try {
 				stationClient = new StationClient(uddiRecord.getUrl());
-				out += stationClient.testPing("HELLOLLL") + '\n';
+				out += stationClient.testPing("Client") + '\n';
 			} catch (StationClientException sce) {
 				continue;
 			}
@@ -240,7 +239,6 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public void testInit(int userInitialPoints) throws BadInit_Exception {
-
     }
     
     public StationView converter2BinasStationView(org.binas.station.ws.StationView stationView) {
