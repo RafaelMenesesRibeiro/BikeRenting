@@ -62,7 +62,7 @@ public class BinasClientApp {
 				System.out.println("Credit after return: " + client.getCredit("a@test.com"));
 			}
 
-			list = client.listStations(3, c);
+			list = client.listStations(2, c);
 			for (StationView v2 : list) {
 				System.out.println(v2.getId() + " " + v2.getCoordinate().getX() + ", " + v2.getCoordinate().getY());
 			}

@@ -93,8 +93,8 @@ public class StationPortImpl implements StationPortType {
 				Station.getInstance().init(x, y, capacity, returnPrize);
 			}
 			catch (BadInitException e) {
-				//TODO: understand what this line is supposed to do.
-				//throwBadInit("Invalid initialization values!");
+				System.out.println(e.getMessage());
+				//throw BadInit_Exception("Invalid initialization values!", new BadInit());
 		}
 	}
 
