@@ -3,11 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-	<!-- Please replace 'CXX' below with 
-        your C (campus) with A (Alameda) / T (Tagus); and 
-        your group number with two digits.
-        Then delete this comment. -->
-    <groupId>org.binas.CXX</groupId>
+	<groupId>org.binas.T01</groupId>
 	<artifactId>binas-ws</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -22,8 +18,8 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<mainclass>org.binas.ws.BinasApp</mainclass>
-		<uddi.url>http://localhost:9090</uddi.url>
-		<group.id>CXX</group.id>
+		<uddi.url>http://t01:b9jPmdO@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
+		<group.id>T01</group.id>
         
         <ws.name>${group.id}_Binas</ws.name>
 		<ws.url>http://localhost:8080/binas-ws/endpoint</ws.url>
@@ -46,7 +42,7 @@
 	        </dependency>
 	         <!-- Station Client -->
 	        <dependency>
-	            <groupId>org.binas.CXX</groupId>
+	            <groupId>org.binas.T01</groupId>
 	            <artifactId>station-ws-cli</artifactId>
 	            <version>1.0-SNAPSHOT</version>
 	        </dependency>
