@@ -58,7 +58,10 @@ public class StationPortImpl implements StationPortType {
 			view.setTag(user.getTag());
 			return view;
 		}
-		catch (UserNotFoundException e) { System.out.println(e.getMessage()); }
+		catch (UserNotFoundException e) {
+			System.out.println(e.getMessage());
+			//TODO
+		}
 		return null;
 	}
 
