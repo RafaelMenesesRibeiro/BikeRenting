@@ -2,8 +2,11 @@ package org.binas.station.ws;
 
 import javax.jws.WebService;
 
+import org.binas.station.ws.UsersManager;
+import org.binas.station.ws.UsersManager.TaggedUser;
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
+import org.binas.station.domain.exception.UserNotFoundException;
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
@@ -47,10 +50,22 @@ public class StationPortImpl implements StationPortType {
 	}
 
 	/** Retrieve balance of user. */
-	public BalanceView getBalance(String email) { return null; }
+	public BalanceView getBalance(String email) {
+		try {
+			TaggedUser user = UsersManager.getInstance().getUser(email);
+			BalanceView view = new BalanceView();
+			view.setBalance(user.getBalance());
+			view.setTag(user.getTag());
+			return view;
+		}
+		catch (UserNotFoundException e) { System.out.println(e.getMessage()); }
+		return null;
+	}
 
 	/** Set balance of user. */
-	public void setBalance(String email, int balance, int tag) {  }
+	public void setBalance(String email, int balance, int tag) {
+		//TODO
+	}
 
 	/** Return a bike to the station. */
 	@Override
