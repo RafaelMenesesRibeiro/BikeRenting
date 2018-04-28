@@ -50,7 +50,7 @@ public class StationPortImpl implements StationPortType {
 	}
 
 	/** Retrieve balance of user. */
-	public BalanceView getBalance(String email) {
+	public BalanceView getBalance(String email) throws UserNotFound_Exception {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
 			BalanceView view = new BalanceView();
@@ -176,6 +176,13 @@ public class StationPortImpl implements StationPortType {
 		BadInit faultInfo = new BadInit();
 		faultInfo.message = message;
 		throw new BadInit_Exception(message, faultInfo);
+	}
+
+	/** Helper to throw a new NoSlotAvail exception. */
+	private void throwUserNotFound(final String message) throws UserNotFound_Exception {
+		UserNotFound faultInfo = new UserNotFound();
+		faultInfo.message = message;
+		throw new UserNotFound_Exception(message, faultInfo);
 	}
 
 }

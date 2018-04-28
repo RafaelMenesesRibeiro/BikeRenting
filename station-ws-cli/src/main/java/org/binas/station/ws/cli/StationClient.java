@@ -9,6 +9,7 @@ import javax.xml.ws.BindingProvider;
 import org.binas.station.ws.BadInit_Exception;
 import org.binas.station.ws.NoBinaAvail_Exception;
 import org.binas.station.ws.NoSlotAvail_Exception;
+import org.binas.station.ws.UserNotFound_Exception;
 import org.binas.station.ws.StationPortType;
 import org.binas.station.ws.StationService;
 import org.binas.station.ws.StationView;
@@ -114,7 +115,7 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public BalanceView getBalance(String email) { return port.getBalance(email); }
+	public BalanceView getBalance(String email) throws UserNotFound_Exception { return port.getBalance(email); }
 
 	@Override
 	public void setBalance(String email, int balance, int tag) { port.setBalance(email, balance, tag); }

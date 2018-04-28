@@ -23,6 +23,7 @@ import org.binas.domain.exception.UserHasNoBinaException;
 import org.binas.domain.exception.UserNotFoundException;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
+import org.binas.station.ws.UserNotFound_Exception;
 
 import org.binas.station.ws.cli.StationClientException;
 
@@ -49,14 +50,32 @@ public class BinasPortImpl implements BinasPortType {
 	@Override
 	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
 		try {
+			int stationNumber = BinasManager.getInstance().getStations().size();
+			CoordinatesView coordinatesView = new CoordinatesView();
+			coordinatesView.setX(0);
+			coordinatesView.setY(0);
+			List<StationView> stations = this.listStations(stationNumber, coordinatesView);
+			for (StationView stationView : stations) {
+				if (this.getStationUserCredit(stationView.getId(), email) != -1) {
+					throw new UserAlreadyExistsException();
+				}
+			}
+
 			User user = BinasManager.getInstance().createUser(email);
 			
+			for (StationView stationView : stations) {
+				StationClient stationCli = BinasManager.getInstance().getStation(stationView.getId());
+				stationCli.setBalance(email, user.getCredit(), 1);
+			}
+
 			//Create and populate userView
 			UserView userView = new UserView();
 			userView.setEmail(user.getEmail());
 			userView.setCredit(user.getCredit());
 			userView.setHasBina(user.getHasBina());
 			return userView;
+		} catch (StationNotFoundException snfe) {
+			//Do nothing. Continue.
 		} catch (UserAlreadyExistsException e) {
 			throwEmailExists("Email already exists: " + email);
 		} catch (InvalidEmailException e) {
@@ -79,6 +98,22 @@ public class BinasPortImpl implements BinasPortType {
 			return null;
 		}
 		
+	}
+
+	public int getStationUserCredit(String stationId, String email) {
+		if(stationId == null || stationId.trim().isEmpty()) { return -1; }
+		
+		StationClient stationCli;
+		try {
+			stationCli = BinasManager.getInstance().getStation(stationId);
+			int balance = stationCli.getBalance(email).getBalance();
+		}
+		catch (StationNotFoundException e) { return -1; }
+		catch (UserNotFound_Exception unee) {
+			System.out.println(unee.getMessage());
+			return -1;
+		}
+		return -1;
 	}
 
 	@Override
