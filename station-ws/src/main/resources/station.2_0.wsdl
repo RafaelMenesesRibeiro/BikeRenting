@@ -120,6 +120,13 @@
             </xs:complexType>
             <xs:element name="NoSlotAvail" type="tns:NoSlotAvail" />
 
+            <xs:complexType name="UserNotFound">
+                <xs:sequence>
+                    <xs:element name="message" type="xs:string" minOccurs="0" />
+                </xs:sequence>
+            </xs:complexType>
+            <xs:element name="UserNotFound" type="tns:UserNotFound" />
+
 
             <!-- test control operations data types -->
 
@@ -217,6 +224,9 @@
     <message name="NoBinaAvail">
         <part name="fault" element="tns:NoBinaAvail" />
     </message>
+    <message name="UserNotFound">
+        <part name="fault" element="tns:UserNotFound" />
+    </message>
 
     <!-- test control messages -->
     <message name="test_ping">
@@ -260,6 +270,8 @@
                 message="tns:getBalance" />
             <output wsam:Action="http://ws.station.binas.org/Station/getBalanceResponse"
                 message="tns:getBalanceResponse" />
+            <fault message="tns:UserNotFound" name="UserNotFound"
+                wsam:Action="http://ws.station.binas.org/Station/test_init/Fault/UserNotFound" />
         </operation>
 
         <operation name="setBalance">
@@ -336,6 +348,9 @@
             <output>
                 <soap:body use="literal" />
             </output>
+            <fault name="UserNotFound">
+                <soap:fault name="UserNotFound" use="literal" />
+            </fault>
         </operation>
 
         <operation name="setBalance">
