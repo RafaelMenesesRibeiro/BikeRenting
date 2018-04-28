@@ -12,6 +12,7 @@ import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.StationPortType;
 import org.binas.station.ws.StationService;
 import org.binas.station.ws.StationView;
+import org.binas.station.ws.BalanceView;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
@@ -111,6 +112,12 @@ public class StationClient implements StationPortType {
 	public StationView getInfo() {
 		return port.getInfo();
 	}
+
+	@Override
+	public BalanceView getBalance(String email) { return port.getBalance(email); }
+
+	@Override
+	public void setBalance(String email, int balance, int tag) { port.setBalance(email, balance, tag); }
 
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {

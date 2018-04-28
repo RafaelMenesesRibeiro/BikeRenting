@@ -13,7 +13,7 @@ import org.binas.station.domain.exception.NoSlotAvailException;
  * below "map" the Java class to the WSDL definitions.
  */
 @WebService(endpointInterface = "org.binas.station.ws.StationPortType",
-            wsdlLocation = "station.wsdl",
+            wsdlLocation = "station.2_0.wsdl",
             name ="StationWebService",
             portName = "StationPort",
             targetNamespace="http://ws.station.binas.org/",
@@ -45,6 +45,12 @@ public class StationPortImpl implements StationPortType {
 			return buildStationView(station);
 		}
 	}
+
+	/** Retrieve balance of user. */
+	public BalanceView getBalance(String email) { return null; }
+
+	/** Set balance of user. */
+	public void setBalance(String email, int balance, int tag) {  }
 
 	/** Return a bike to the station. */
 	@Override
