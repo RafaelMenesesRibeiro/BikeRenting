@@ -1,6 +1,9 @@
 package org.binas.station.ws;
 
+import java.util.concurrent.Future;
 import javax.jws.WebService;
+import javax.xml.ws.Response;
+import javax.xml.ws.AsyncHandler;
 
 import org.binas.station.ws.UsersManager;
 import org.binas.station.ws.UsersManager.TaggedUser;
@@ -49,6 +52,12 @@ public class StationPortImpl implements StationPortType {
 		}
 	}
 
+	@Override
+	public Response<org.binas.station.ws.GetInfoResponse> getInfoAsync() { return null; }
+
+	@Override
+	public Future<?> getInfoAsync(AsyncHandler<org.binas.station.ws.GetInfoResponse> asyncHandler) { return null; }
+
 	/** Retrieve balance of user. */
 	public BalanceView getBalance(String email) throws UserNotFound_Exception {
 		try {
@@ -83,6 +92,12 @@ public class StationPortImpl implements StationPortType {
 		return bonus;
 	}
 
+	@Override
+	public Response<org.binas.station.ws.ReturnBinaResponse> returnBinaAsync() { return null; }
+
+	@Override
+	public Future<?> returnBinaAsync(AsyncHandler<org.binas.station.ws.ReturnBinaResponse> asyncHandler) { return null; }
+
 	/** Take a bike from the station. */
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {
@@ -94,6 +109,11 @@ public class StationPortImpl implements StationPortType {
 		}
 	}
 
+	@Override
+	public Response<org.binas.station.ws.GetBinaResponse> getBinaAsync() { return null; }
+
+	@Override
+	public Future<?> getBinaAsync(AsyncHandler<org.binas.station.ws.GetBinaResponse> asyncHandler) { return null; }
 
 	// Test Control operations -----------------------------------------------
 
@@ -116,11 +136,24 @@ public class StationPortImpl implements StationPortType {
 		return builder.toString();
 	}
 
+	@Override
+	public Response<org.binas.station.ws.TestPingResponse> testPingAsync(String inputMessage) { return null; }
+
+	@Override
+	public Future<?> testPingAsync(String inputMessage, AsyncHandler<org.binas.station.ws.TestPingResponse> asyncHandler) { return null; }
+
 	/** Return all station variables to default values. */
 	@Override
 	public void testClear() {
 		Station.getInstance().reset();
 	}
+
+	@Override
+	public Response<org.binas.station.ws.TestClearResponse> testClearAsync() { return null; }
+
+	@Override
+	public Future<?> testClearAsync(AsyncHandler<org.binas.station.ws.TestClearResponse> asyncHandler) { return null; }
+
 
 	/** Set station variables with specific values. */
 	@Override
@@ -131,6 +164,12 @@ public class StationPortImpl implements StationPortType {
 			throwBadInit("Invalid initialization values!");
 		}
 	}
+
+	@Override
+	public Response<org.binas.station.ws.TestInitResponse> testInitAsync(int x, int y, int capacity, int returnPrize) { return null; }
+
+	@Override
+	public Future<?> testInitAsync(int x, int y, int capacity, int returnPrize, AsyncHandler<org.binas.station.ws.TestInitResponse> asyncHandler) { return null; }
 
 	// View helpers ----------------------------------------------------------
 
