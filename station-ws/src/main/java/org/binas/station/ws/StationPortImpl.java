@@ -59,6 +59,7 @@ public class StationPortImpl implements StationPortType {
 	public Future<?> getInfoAsync(AsyncHandler<org.binas.station.ws.GetInfoResponse> asyncHandler) { return null; }
 
 	/** Retrieve balance of user. */
+	@Override
 	public BalanceView getBalance(String email) throws UserNotFound_Exception {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
@@ -74,10 +75,23 @@ public class StationPortImpl implements StationPortType {
 		return null;
 	}
 
+	@Override
+	public Response<org.binas.station.ws.GetBalanceResponse> getBalanceAsync(String email) { return null; }
+
+	@Override
+	public Future<?> getBalanceAsync(String email, AsyncHandler<org.binas.station.ws.GetBalanceResponse> asyncHandler) { return null; }
+
 	/** Set balance of user. */
+	@Override
 	public void setBalance(String email, int balance, int tag) {
 		//TODO
 	}
+
+	@Override
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int tag) { return null; }
+
+	@Override
+	public Future<?> setBalanceAsync(String email, int balance, int tag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
 
 	/** Return a bike to the station. */
 	@Override
