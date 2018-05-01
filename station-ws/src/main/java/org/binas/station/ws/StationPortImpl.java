@@ -68,10 +68,9 @@ public class StationPortImpl implements StationPortType {
 			return view;
 		}
 		catch (UserNotFoundException e) {
-			System.out.println(e.getMessage());
-			//TODO
+			System.out.println("User with email " + email + " not found in this station.");
+			throw new UserNotFound_Exception("User with email " + email + " not found in this station.", new UserNotFound());
 		}
-		return null;
 	}
 
 	@Override
