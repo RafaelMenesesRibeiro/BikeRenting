@@ -63,6 +63,7 @@ public class StationPortImpl implements StationPortType {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
 			BalanceView view = new BalanceView();
+			System.out.println("User with email " + email + " found in this station. Balance: " + user.getBalance());
 			view.setBalance(user.getBalance());
 			view.setTag(user.getTag());
 			return view;
