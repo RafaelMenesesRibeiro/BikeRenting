@@ -6,7 +6,6 @@ import javax.xml.ws.Response;
 import javax.xml.ws.AsyncHandler;
 
 import org.binas.station.ws.UsersManager;
-import org.binas.station.ws.UsersManager.TaggedUser;
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
 import org.binas.station.domain.exception.UserNotFoundException;
