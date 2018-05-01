@@ -51,7 +51,8 @@ public class UsersManager {
 	}
 
 	public void addUser(String email, int balance, int tag) {
-		//TODO
+		TaggedUser user = new TaggedUser(email, balance, tag);
+		registeredUsers.put(email, user);
 	} 
 	
 	public synchronized void reset() {
