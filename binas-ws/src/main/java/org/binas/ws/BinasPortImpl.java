@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import javax.jws.WebService;
+import javax.xml.ws.AsyncHandler;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.Response;
 
 import org.binas.domain.BinasManager;
 import org.binas.domain.StationsComparator;
@@ -24,6 +28,8 @@ import org.binas.domain.exception.UserNotFoundException;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.UserNotFound_Exception;
+import org.binas.station.ws.GetBalanceResponse;
+import org.binas.station.ws.SetBalanceResponse;
 
 import org.binas.station.ws.cli.StationClientException;
 
@@ -32,16 +38,21 @@ import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINamingException;
 
 @WebService(
 		endpointInterface = "org.binas.ws.BinasPortType",
-        wsdlLocation = "binas.wsdl",
-        name ="BinasWebService",
-        portName = "BinasPort",
-        targetNamespace="http://ws.binas.org/",
-        serviceName = "BinasService"
+		wsdlLocation = "binas.wsdl",
+		name ="BinasWebService",
+		portName = "BinasPort",
+		targetNamespace="http://ws.binas.org/",
+		serviceName = "BinasService"
 )
 public class BinasPortImpl implements BinasPortType {
 	
 	// end point manager
 	private BinasEndpointManager endpointManager;
+
+	//Used to check if the asynchronous calls are done.
+	int isFinished = 0;
+	//Used to check if user exists after all the asynchronous calls.
+	boolean isAlreadyUser = false;
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
@@ -49,23 +60,88 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
 	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
+		isFinished = 0;
+		isAlreadyUser = false;
+
 		try {
 			int stationNumber = BinasManager.getInstance().getStations().size();
 			CoordinatesView coordinatesView = new CoordinatesView();
 			coordinatesView.setX(0);
 			coordinatesView.setY(0);
 			List<StationView> stations = this.listStations(stationNumber, coordinatesView);
+
+			System.out.println("Found " + stationNumber + " stations running.");
 			for (StationView stationView : stations) {
-				if (this.getStationUserCredit(stationView.getId(), email) != -1) {
-					throw new UserAlreadyExistsException();
+				try {
+					String stationId = stationView.getId();
+					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
+					//Asynchronous call with callback.
+					stationCli.getBalanceAsync(email, new AsyncHandler<GetBalanceResponse>() {
+						@Override
+						public void handleResponse(Response<GetBalanceResponse> response) {
+							try {
+								System.out.println("Asynchronous call result arrived: ");
+								String className = response.get().getBalanceInfo().getClass().getName();
+								if (className.equals("org.binas.station.ws.BalanceView")) {
+									isAlreadyUser = true;
+									int balance = response.get().getBalanceInfo().getBalance();
+									System.out.println("Balance of user " + email + " is " + balance + ". According to station \"" + stationId + "\"");
+								}
+								isFinished += 1;
+							}
+							catch (InterruptedException ie) { System.out.println("Caught interrupted exception.\nCause: " + ie.getCause()); }
+							catch (ExecutionException ee) { isFinished += 1; }
+						}
+					});
 				}
+				catch (StationNotFoundException e) { /*Do nothing. Continue.*/ }
+			}
+			
+			while (isFinished != stationNumber) {
+				try {
+					Thread.sleep(100);
+					System.out.print(".");
+					System.out.flush();
+				}
+				catch (Exception e) { System.out.println("Caught exception.\n " + "Cause: " + e.getCause()); }
 			}
 
+			System.out.println("\nAll asynchronous calls completed.");
+
+			//If at least on of the stations report a user with the given email already exists, throws exception.
+			if (isAlreadyUser) { throw new UserAlreadyExistsException(); }
+
+			//If the user doens't exist in any of the available stations, creates one.
 			User user = BinasManager.getInstance().createUser(email);
 			
+			//And creates one in all the stations.
 			for (StationView stationView : stations) {
 				StationClient stationCli = BinasManager.getInstance().getStation(stationView.getId());
 				stationCli.setBalance(email, user.getCredit(), 1);
+			}
+
+			isFinished = 0;
+			int credit = user.getCredit();
+			for (StationView stationView : stations) {
+				try {
+					String stationId = stationView.getId();
+					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
+					//Asynchronous call with callback.
+					stationCli.setBalanceAsync(email, credit, 1, new AsyncHandler<SetBalanceResponse>() {
+						@Override
+						public void handleResponse(Response<SetBalanceResponse> response) { isFinished += 1; }
+					});
+				}
+				catch (StationNotFoundException e) { /*Do nothing. Continue.*/ }
+			}
+			
+			while (isFinished != stationNumber) {
+				try {
+					Thread.sleep(100);
+					System.out.print(".");
+					System.out.flush();
+				}
+				catch (Exception e) { System.out.println("Caught exception.\n " + "Cause: " + e.getCause()); }
 			}
 
 			//Create and populate userView
