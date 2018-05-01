@@ -50,6 +50,7 @@ public class UsersManager {
 		return user;
 	}
 
+	/** Adds new User for this station. */
 	public void addUser(String email, int balance, int tag) {
 		TaggedUser user = new TaggedUser(email, balance, tag);
 		registeredUsers.put(email, user);
