@@ -82,7 +82,14 @@ public class StationPortImpl implements StationPortType {
 	/** Set balance of user. */
 	@Override
 	public void setBalance(String email, int balance, int tag) {
-		//TODO
+		try {
+			TaggedUser user = UsersManager.getInstance().getUser(email);
+			user.setBalance(balance);
+			user.setTag(tag);
+		}
+		catch (UserNotFoundException e) {
+			UsersManager.getInstance().addUser(email, balance, tag);
+		}
 	}
 
 	@Override
