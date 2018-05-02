@@ -66,6 +66,11 @@ public class BinasManager {
 	public User getUser(String email) throws UserNotFoundException {
 		return UsersManager.getInstance().getUser(email);
 	}
+
+	public boolean hasUserBina(String email) throws UserNotFoundException {
+		User user = getUser(email);
+		return user.getHasBina();
+	}
 	
 	public void rentBina(String stationId, String email) throws UserNotFoundException, InsufficientCreditsException, UserAlreadyHasBinaException, StationNotFoundException, NoBinaAvail_Exception {
 		User user = getUser(email);
