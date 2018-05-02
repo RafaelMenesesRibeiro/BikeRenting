@@ -53,6 +53,13 @@ public class BinasPortImpl implements BinasPortType {
 	int isFinished = 0;
 	//Used to check if user exists after all the asynchronous calls.
 	boolean isAlreadyUser = false;
+	//Used to represent the sequence number in Quorum Consensus.
+	int sequenceNumber = 1;
+	//Used to represent the maximum sequence number of all the stations.
+	int  maxSeq = 0;
+	//Used to represent the minimum station id with the maximum sequence number.
+	int minCid = 0;
+
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
@@ -62,6 +69,8 @@ public class BinasPortImpl implements BinasPortType {
 	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
 		isFinished = 0;
 		isAlreadyUser = false;
+		maxSeq = 0;
+		minCid = 0;
 
 		try {
 			int stationNumber = BinasManager.getInstance().getStations().size();
@@ -71,6 +80,7 @@ public class BinasPortImpl implements BinasPortType {
 			List<StationView> stations = this.listStations(stationNumber, coordinatesView);
 
 			System.out.println("Found " + stationNumber + " stations running.");
+			
 			for (StationView stationView : stations) {
 				try {
 					String stationId = stationView.getId();
@@ -85,6 +95,13 @@ public class BinasPortImpl implements BinasPortType {
 								if (className.equals("org.binas.station.ws.BalanceView")) {
 									isAlreadyUser = true;
 									int balance = response.get().getBalanceInfo().getBalance();
+									int seq = response.get().getBalanceInfo().getTag().getSeq();
+									int cid = response.get().getBalanceInfo().getTag().getCid();
+									if (seq > maxSeq) {
+										maxSeq = seq;
+										minCid = cid;
+									}
+									else if (seq == maxSeq && cid < minCid) { minCid = cid;	 }
 									System.out.println("Balance of user " + email + " is " + balance + ". According to station \"" + stationId + "\"");
 								}
 								isFinished += 1;
@@ -114,20 +131,18 @@ public class BinasPortImpl implements BinasPortType {
 			//If the user doens't exist in any of the available stations, creates one.
 			User user = BinasManager.getInstance().createUser(email);
 			
-			//And creates one in all the stations.
-			for (StationView stationView : stations) {
-				StationClient stationCli = BinasManager.getInstance().getStation(stationView.getId());
-				stationCli.setBalance(email, user.getCredit(), 1, 1);
-			}
+			//Sets the sequence number to the maxSeq + 1 found from all the stations.
+			this.sequenceNumber = maxSeq + 1;
 
 			isFinished = 0;
 			int credit = user.getCredit();
+			//And creates one in all the stations.
 			for (StationView stationView : stations) {
 				try {
 					String stationId = stationView.getId();
 					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
 					//Asynchronous call with callback.
-					stationCli.setBalanceAsync(email, credit, 1, 1, new AsyncHandler<SetBalanceResponse>() {
+					stationCli.setBalanceAsync(email, credit, this.sequenceNumber, 1, new AsyncHandler<SetBalanceResponse>() {
 						@Override
 						public void handleResponse(Response<SetBalanceResponse> response) { isFinished += 1; }
 					});
@@ -150,8 +165,6 @@ public class BinasPortImpl implements BinasPortType {
 			userView.setCredit(user.getCredit());
 			userView.setHasBina(user.getHasBina());
 			return userView;
-		} catch (StationNotFoundException snfe) {
-			//Do nothing. Continue.
 		} catch (UserAlreadyExistsException e) {
 			throwEmailExists("Email already exists: " + email);
 		} catch (InvalidEmailException e) {
