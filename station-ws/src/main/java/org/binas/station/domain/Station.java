@@ -6,7 +6,12 @@ import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
 
-/** Domain Root. */
+/**
+ * Station Client
+ *
+ * Station is defined by an ID, a set of Coordinates, capacity and retrieval bonus. 
+ *
+ */
 public class Station {
 	
 	/** Creates and returns default coordinates. */

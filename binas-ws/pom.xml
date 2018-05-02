@@ -3,9 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<!-- http://maven.apache.org/pom.html#Quick_Overview -->
 
-	<!-- Please replace 'CXX' below with your C (campus) with A (Alameda) / 
-		T (Tagus); and your group number with two digits. Then delete this comment. -->
-	<groupId>org.binas.CXX</groupId>
+	<groupId>org.binas.T01</groupId>
 	<artifactId>binas-ws</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
@@ -20,22 +18,35 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<mainclass>org.binas.ws.BinasApp</mainclass>
-		<uddi.url>http://localhost:9090</uddi.url>
-		<group.id>CXX</group.id>
-
-		<ws.name>${group.id}_Binas</ws.name>
+		<uddi.url>http://t01:b9jPmdO@uddi.sd.rnl.tecnico.ulisboa.pt:9090</uddi.url>
+		<group.id>T01</group.id>
+        
+        <ws.name>${group.id}_Binas</ws.name>
 		<ws.url>http://localhost:8080/binas-ws/endpoint</ws.url>
-
-		<station.ws.name>${group.id}_Station</station.ws.name>
-
+		
+        <station.ws.name>${group.id}_Station</station.ws.name>
+        
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>com.sun.xml.ws</groupId>
-			<artifactId>jaxws-rt</artifactId>
-			<version>2.2.10</version>
-		</dependency>
-	</dependencies>
+	    	<!-- JAX-WS -->
+	        <dependency>
+	            <groupId>com.sun.xml.ws</groupId>
+	            <artifactId>jaxws-rt</artifactId>
+	            <version>2.2.10</version>
+	        </dependency>
+	        <!-- UDDI Naming -->
+	        <dependency>
+	            <groupId>pt.ulisboa.tecnico.sdis</groupId>
+	            <artifactId>uddi-naming</artifactId>
+	            <version>1.2</version>
+	        </dependency>
+	         <!-- Station Client -->
+	        <dependency>
+	            <groupId>org.binas.T01</groupId>
+	            <artifactId>station-ws-cli</artifactId>
+	            <version>1.0-SNAPSHOT</version>
+	        </dependency>
+	    </dependencies>
 
 	<build>
 		<resources>
@@ -46,15 +57,15 @@
 		</resources>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
-				<configuration>
-					<nonFilteredFileExtensions>
-						<nonFilteredFileExtension>jks</nonFilteredFileExtension>
-					</nonFilteredFileExtensions>
-				</configuration>
-			</plugin>
+        			<groupId>org.apache.maven.plugins</groupId>
+        			<artifactId>maven-resources-plugin</artifactId>
+        			<version>2.6</version>
+        			<configuration>
+            			<nonFilteredFileExtensions>                            
+                			<nonFilteredFileExtension>jks</nonFilteredFileExtension>
+            			</nonFilteredFileExtensions>
+        			</configuration>
+    			</plugin>   
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>
@@ -96,8 +107,8 @@
 					<mainClass>${mainclass}</mainClass>
 					<arguments>
 						<argument>${uddi.url}</argument>
-						<argument>${ws.name}</argument>
-						<argument>${ws.url}</argument>
+                        <argument>${ws.name}</argument>
+                        <argument>${ws.url}</argument>
 					</arguments>
 				</configuration>
 			</plugin>

@@ -1,5 +1,7 @@
 package org.binas.ws.it;
 
+import static org.junit.Assert.assertNotNull;
+
 import org.junit.Test;
 
 
@@ -15,7 +17,7 @@ public class PingIT extends BaseIT {
 
     @Test
     public void pingEmptyTest() {
-		// assertNotNull(binasClient.testPing("test"));
+        assertNotNull(client.testPing("test"));
     }
 
 }
