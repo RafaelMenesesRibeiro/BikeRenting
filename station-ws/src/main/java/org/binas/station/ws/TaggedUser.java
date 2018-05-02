@@ -8,13 +8,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TaggedUser {
 	private final String email;
 	private AtomicInteger balance;
-	private int tag;
+	private Tag tag;
 
 	/** Create taggedUser with arguments given. */
-	public TaggedUser(String email, int balance, int tag) {
+	public TaggedUser(String email, int balance, int seq, int cid) {
 		this.email = email;
 		this.balance = new AtomicInteger(balance);
-		this.tag = tag;
+		this.tag = new Tag(seq, cid);
 	}
 	/** Retrieve email of user. */
 	public String getEmail() { return this.email; }
@@ -23,7 +23,7 @@ public class TaggedUser {
 	/** Set balance of user. */
 	public void setBalance(int balance) { this.balance = new AtomicInteger(balance); }
 	/** Retrieve tag of user. */
-	public int getTag() { return this.tag; }
+	public Tag getTag() { return this.tag; }
 	/** Set tag of user. */
-	public void setTag(int newTag) { this.tag = newTag; }
+	public void setTag(int seq, int cid) { this.tag.setNewValues(seq, cid); }
 }

@@ -66,23 +66,26 @@ public class BinasManager {
 	public User getUser(String email) throws UserNotFoundException {
 		return UsersManager.getInstance().getUser(email);
 	}
-	
-	public void rentBina(String stationId, String email) throws UserNotFoundException, InsufficientCreditsException, UserAlreadyHasBinaException, StationNotFoundException, NoBinaAvail_Exception {
-		User user = getUser(email);
-		synchronized (user) {
-			//validate user can rent
-			user.validateCanRentBina();
 
-			//validate station can rent
-			StationClient stationCli = getStation(stationId);
-			stationCli.getBina();
-			
-			//apply rent action to user
-			user.effectiveRent();
-		}
+	public boolean hasUserBina(String email) throws UserNotFoundException {
+		User user = getUser(email);
+		boolean r;
+		synchronized (user) { r = user.getHasBina(); }
+		return r;
+	}
+
+	public void setUserHasBina(String email, boolean b) throws UserNotFoundException { 
+		User user = getUser(email);
+		synchronized (user) { user.setHasBina(b); }
 	}
 	
-	public void returnBina(String stationId, String email) throws UserNotFoundException, NoSlotAvail_Exception, UserHasNoBinaException, StationNotFoundException {
+	public void rentBina(String stationId, String email) throws UserNotFoundException, InsufficientCreditsException, UserAlreadyHasBinaException, StationNotFoundException, NoBinaAvail_Exception {
+		//Removes bina from station.
+		StationClient stationCli = getStation(stationId);
+		stationCli.getBina();
+	}
+	
+	public int returnBina(String stationId, String email) throws UserNotFoundException, NoSlotAvail_Exception, UserHasNoBinaException, StationNotFoundException {
 		User user = getUser(email);
 		synchronized (user) {
 			//validate user can rent
@@ -93,7 +96,8 @@ public class BinasManager {
 			int prize = stationCli.returnBina();
 			
 			//apply rent action to user
-			user.effectiveReturn(prize);
+			user.effectiveReturn();
+			return prize;
 		}		
 	}
 

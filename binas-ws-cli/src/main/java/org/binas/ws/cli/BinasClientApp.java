@@ -49,10 +49,10 @@ public class BinasClientApp {
         // the following remote invocations are just basic examples
         // the actual tests are made using JUnit
 
-        System.out.println("Invoke ping()...");
-        String result = client.testPing("client");
-        System.out.print(result);
-        
+        //System.out.println("Invoke ping()...");
+        //String result = client.testPing("client");
+        System.out.println("Invoking activateUser()...");
+        client.activateUser("aaaa@gmail.com");      
 	 }
 }
 

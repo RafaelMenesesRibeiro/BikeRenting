@@ -62,10 +62,14 @@ public class StationPortImpl implements StationPortType {
 	public BalanceView getBalance(String email) throws UserNotFound_Exception {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
-			BalanceView view = new BalanceView();
-			view.setBalance(user.getBalance());
-			view.setTag(user.getTag());
-			return view;
+			BalanceView balanceView = new BalanceView();
+			System.out.println("User with email " + email + " found in this station. Balance: " + user.getBalance());
+			TagView tagView = new TagView();
+			tagView.setSeq(user.getTag().getSeq());
+			tagView.setCid(user.getTag().getCid());
+			balanceView.setBalance(user.getBalance());
+			balanceView.setTag(tagView);
+			return balanceView;
 		}
 		catch (UserNotFoundException e) {
 			System.out.println("User with email " + email + " not found in this station.");
@@ -81,22 +85,22 @@ public class StationPortImpl implements StationPortType {
 
 	/** Set balance of user. */
 	@Override
-	public void setBalance(String email, int balance, int tag) {
+	public void setBalance(String email, int balance, TagView newTag) {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
 			user.setBalance(balance);
-			user.setTag(tag);
+			user.setTag(newTag.getSeq(), newTag.getCid());
 		}
 		catch (UserNotFoundException e) {
-			UsersManager.getInstance().addUser(email, balance, tag);
+			UsersManager.getInstance().addUser(email, balance, newTag.getSeq(), newTag.getCid());
 		}
 	}
 
 	@Override
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int tag) { return null; }
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, TagView newTag) { return null; }
 
 	@Override
-	public Future<?> setBalanceAsync(String email, int balance, int tag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
+	public Future<?> setBalanceAsync(String email, int balance, TagView newTag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
 
 	/** Return a bike to the station. */
 	@Override
@@ -165,6 +169,7 @@ public class StationPortImpl implements StationPortType {
 	@Override
 	public void testClear() {
 		Station.getInstance().reset();
+		UsersManager.getInstance().reset();
 	}
 
 	@Override
