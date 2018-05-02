@@ -25,6 +25,7 @@ import org.binas.domain.exception.UserAlreadyExistsException;
 import org.binas.domain.exception.UserAlreadyHasBinaException;
 import org.binas.domain.exception.UserHasNoBinaException;
 import org.binas.domain.exception.UserNotFoundException;
+import org.binas.domain.exception.QuorumConsensusException;
 import org.binas.station.ws.NoSlotAvail_Exception;
 import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.UserNotFound_Exception;
@@ -74,13 +75,15 @@ public class BinasPortImpl implements BinasPortType {
 
 		try {
 			int stationNumber = BinasManager.getInstance().getStations().size();
+			int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
+			System.out.println("The minimum number of station answers is " + minStationAnswers);
+
 			CoordinatesView coordinatesView = new CoordinatesView();
 			coordinatesView.setX(0);
 			coordinatesView.setY(0);
 			List<StationView> stations = this.listStations(stationNumber, coordinatesView);
 
-			System.out.println("Found " + stationNumber + " stations running.");
-			
+			System.out.println("Found " + stationNumber + " stations running.");			
 			for (StationView stationView : stations) {
 				try {
 					String stationId = stationView.getId();
@@ -165,11 +168,12 @@ public class BinasPortImpl implements BinasPortType {
 			userView.setCredit(user.getCredit());
 			userView.setHasBina(user.getHasBina());
 			return userView;
-		} catch (UserAlreadyExistsException e) {
+		}catch (UserAlreadyExistsException e) {
 			throwEmailExists("Email already exists: " + email);
 		} catch (InvalidEmailException e) {
 			throwInvalidEmail("Invalid email: " + email);
 		}
+		//catch (QuorumConsensusException qce) { throwQuorumConsensus(qce.getMessage()); }
 		return null;
 	}
 
@@ -187,22 +191,6 @@ public class BinasPortImpl implements BinasPortType {
 			return null;
 		}
 		
-	}
-
-	public int getStationUserCredit(String stationId, String email) {
-		if(stationId == null || stationId.trim().isEmpty()) { return -1; }
-		
-		StationClient stationCli;
-		try {
-			stationCli = BinasManager.getInstance().getStation(stationId);
-			int balance = stationCli.getBalance(email).getBalance();
-		}
-		catch (StationNotFoundException e) { return -1; }
-		catch (UserNotFound_Exception unee) {
-			System.out.println(unee.getMessage());
-			return -1;
-		}
-		return -1;
 	}
 
 	@Override
@@ -238,6 +226,10 @@ public class BinasPortImpl implements BinasPortType {
 			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
 		
 		try {
+
+
+
+			
 			BinasManager.getInstance().rentBina(stationId,email);
 		} catch (UserNotFoundException e) {
 			throwUserNotExists("User not found: " + email);
@@ -457,5 +449,12 @@ public class BinasPortImpl implements BinasPortType {
 		BadInit faultInfo = new BadInit();
 		faultInfo.setMessage(message);
 		throw new BadInit_Exception(message, faultInfo);
+	}
+
+	private void throwQuorumConsensus(final String message) { //throws QuorumConsensus_Exception {
+		//QuorumConsensus faultInfo = new QuorumConsensus();
+		//faultInfo.setMessage(message);
+		//throw new QuorumConsensus_Exception(message, fault);
+		System.out.println(message);
 	}
 }
