@@ -17,6 +17,7 @@ import org.binas.station.ws.UserNotFound_Exception;
 import org.binas.station.ws.StationPortType;
 import org.binas.station.ws.StationService;
 import org.binas.station.ws.StationView;
+import org.binas.station.ws.TagView;
 import org.binas.station.ws.BalanceView;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
@@ -132,11 +133,11 @@ public class StationClient implements StationPortType {
 	public Future<?> getBalanceAsync(String email, AsyncHandler<org.binas.station.ws.GetBalanceResponse> asyncHandler) { return port.getBalanceAsync(email, asyncHandler); }
 
 	@Override
-	public void setBalance(String email, int balance, int seq, int cid) { port.setBalance(email, balance, seq, cid); }
+	public void setBalance(String email, int balance, TagView newTag) { port.setBalance(email, balance, newTag); }
 
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int seq, int cid) { return port.setBalanceAsync(email, balance, seq, cid); }
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, TagView newTag) { return port.setBalanceAsync(email, balance, newTag); }
 
-	public Future<?> setBalanceAsync(String email, int balance, int seq, int cid, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return port.setBalanceAsync(email, balance, seq, cid, asyncHandler); }
+	public Future<?> setBalanceAsync(String email, int balance, TagView newTag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return port.setBalanceAsync(email, balance, newTag, asyncHandler); }
 
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {

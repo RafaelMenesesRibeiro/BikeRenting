@@ -31,6 +31,8 @@ import org.binas.station.ws.cli.StationClient;
 import org.binas.station.ws.UserNotFound_Exception;
 import org.binas.station.ws.GetBalanceResponse;
 import org.binas.station.ws.SetBalanceResponse;
+import org.binas.station.ws.TagView;
+import org.binas.station.ws.BalanceView;
 
 import org.binas.station.ws.cli.StationClientException;
 
@@ -60,6 +62,8 @@ public class BinasPortImpl implements BinasPortType {
 	int  maxSeq = 0;
 	//Used to represent the minimum station id with the maximum sequence number.
 	int minCid = 0;
+
+	int cid = 1;
 
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
@@ -144,14 +148,18 @@ public class BinasPortImpl implements BinasPortType {
 				try {
 					String stationId = stationView.getId();
 					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
+					TagView newTag = getTag(email);
+					newTag.setSeq(newTag.getSeq());
+					newTag.setCid(cid);
 					//Asynchronous call with callback.
-					stationCli.setBalanceAsync(email, credit, this.sequenceNumber, 1, new AsyncHandler<SetBalanceResponse>() {
+					stationCli.setBalanceAsync(email, credit, newTag, new AsyncHandler<SetBalanceResponse>() {
 						@Override
 						public void handleResponse(Response<SetBalanceResponse> response) { isFinished += 1; }
 					});
 				}
 				catch (StationNotFoundException e) { /*Do nothing. Continue.*/ }
-			}
+				catch (UserNotExists_Exception enee) { /*Do nothing. Continue.*/ }
+ 			}
 			
 			while (isFinished != stationNumber) {
 				try {
@@ -261,16 +269,109 @@ public class BinasPortImpl implements BinasPortType {
 		}
 	}
 
-	@Override
-	public int getCredit(String email) throws UserNotExists_Exception {
-		try {
-			User user = BinasManager.getInstance().getUser(email);	
-			return user.getCredit();
-		} catch (UserNotFoundException e) {
-			throwUserNotExists("User not found: " + email);
-		}
-		return 0;
+	private BalanceView getBalanceView(String email) throws UserNotExists_Exception {
+        ArrayList<BalanceView> bvArray = new ArrayList<BalanceView>();
+        int stationNumber = BinasManager.getInstance().getStations().size();
+        int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
+        System.out.println("The minimum number of station answers is " + minStationAnswers);
+        CoordinatesView coordinatesView = new CoordinatesView();
+        coordinatesView.setX(0);
+        coordinatesView.setY(0);
+        List<StationView> stations = this.listStations(stationNumber, coordinatesView);
+
+        System.out.println("Found " + stationNumber + " stations running.");
+        for (StationView stationView : stations) {
+            try {
+                String stationId = stationView.getId();
+                StationClient stationCli = BinasManager.getInstance().getStation(stationId);
+                stationCli.getBalanceAsync(email, new AsyncHandler<GetBalanceResponse>() {
+                    @Override
+                    public void handleResponse(Response<GetBalanceResponse> response) {
+                        try {
+                            System.out.println("Asynchronous call result arrived: ");
+                            String className = response.get().getBalanceInfo().getClass().getName();
+                            if (className.equals("org.binas.station.ws.BalanceView")) {
+                                bvArray.add(response.get().getBalanceInfo());
+                            }
+                        }
+
+                        catch (InterruptedException ie) { System.out.println("Caught interrupted exception.\nCause: " + ie.getCause()); }
+                        catch (ExecutionException ee) { isFinished += 1; }                        
+                    }
+                });
+            } catch (StationNotFoundException e) {}
+        }
+
+        try {
+            while (bvArray.size() < minStationAnswers) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException ie) {
+            System.out.println("Caught interrupted exception.\nCause: " + ie.getCause());
+        }
+
+        int maxSeq = -1;
+        int maxCid = -1;
+        BalanceView maxBV = null;
+
+        for (BalanceView bv : bvArray) {
+            if (maxSeq < bv.getTag().getSeq() || (maxSeq == bv.getTag().getSeq() && maxCid < bv.getTag().getCid())) {
+                maxSeq = bv.getTag().getSeq();
+                maxCid = bv.getTag().getCid();
+                maxBV = bv;
+            }
+        }
+
+        return maxBV;
 	}
+
+	@Override
+    public int getCredit(String email) throws UserNotExists_Exception {
+    	return getBalanceView(email).getBalance();
+    }
+
+    public TagView getTag(String email) throws UserNotExists_Exception {
+    	return getBalanceView(email).getTag();
+    }
+
+    public void setCredit(String email, int credit) throws UserNotExists_Exception{
+		TagView newTag = getTag(email);
+		newTag.setSeq(newTag.getSeq());
+		newTag.setCid(cid);
+    	ArrayList<Response> responsesArray = new ArrayList<Response>();
+        int stationNumber = BinasManager.getInstance().getStations().size();
+        int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
+        System.out.println("The minimum number of station answers is " + minStationAnswers);
+        CoordinatesView coordinatesView = new CoordinatesView();
+        coordinatesView.setX(0);
+        coordinatesView.setY(0);
+        List<StationView> stations = this.listStations(stationNumber, coordinatesView);
+
+        System.out.println("Found " + stationNumber + " stations running.");
+		for (StationView stationView : stations) {
+			try {
+				String stationId = stationView.getId();
+				StationClient stationCli = BinasManager.getInstance().getStation(stationId);
+				stationCli.setBalanceAsync(email, credit, newTag, new AsyncHandler<SetBalanceResponse>() {
+					@Override
+					public void handleResponse(Response<SetBalanceResponse> response) {
+						System.out.println("Asynchronous call result arrived: ");
+						responsesArray.add(response);
+					}
+				});
+			} catch (StationNotFoundException e) {
+			}
+		}
+		
+		try {
+			while (responsesArray.size() < minStationAnswers) {
+				Thread.sleep(100);
+			}
+		} catch (InterruptedException ie) {
+			System.out.println("Caught interrupted exception.\nCause: " + ie.getCause());
+		}
+
+    }
 	
 	// Auxiliary operations --------------------------------------------------
 	
