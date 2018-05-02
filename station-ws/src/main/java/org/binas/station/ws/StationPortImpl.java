@@ -85,22 +85,22 @@ public class StationPortImpl implements StationPortType {
 
 	/** Set balance of user. */
 	@Override
-	public void setBalance(String email, int balance, int seq, int cid) {
+	public void setBalance(String email, int balance, TagView newTag) {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
 			user.setBalance(balance);
-			user.setTag(seq, cid);
+			user.setTag(newTag.getSeq(), newTag.getCid());
 		}
 		catch (UserNotFoundException e) {
-			UsersManager.getInstance().addUser(email, balance, seq, cid);
+			UsersManager.getInstance().addUser(email, balance, newTag.getSeq(), newTag.getCid());
 		}
 	}
 
 	@Override
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int seq, int cid) { return null; }
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, TagView newTag) { return null; }
 
 	@Override
-	public Future<?> setBalanceAsync(String email, int balance, int seq, int cid, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
+	public Future<?> setBalanceAsync(String email, int balance, TagView newTag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
 
 	/** Return a bike to the station. */
 	@Override
