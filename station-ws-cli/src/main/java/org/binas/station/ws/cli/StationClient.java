@@ -132,11 +132,11 @@ public class StationClient implements StationPortType {
 	public Future<?> getBalanceAsync(String email, AsyncHandler<org.binas.station.ws.GetBalanceResponse> asyncHandler) { return port.getBalanceAsync(email, asyncHandler); }
 
 	@Override
-	public void setBalance(String email, int balance, int tag) { port.setBalance(email, balance, tag); }
+	public void setBalance(String email, int balance, int seq, int cid) { port.setBalance(email, balance, seq, cid); }
 
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int tag) { return port.setBalanceAsync(email, balance, tag); }
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int seq, int cid) { return port.setBalanceAsync(email, balance, seq, cid); }
 
-	public Future<?> setBalanceAsync(String email, int balance, int tag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return port.setBalanceAsync(email, balance, tag, asyncHandler); }
+	public Future<?> setBalanceAsync(String email, int balance, int seq, int cid, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return port.setBalanceAsync(email, balance, seq, cid, asyncHandler); }
 
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {

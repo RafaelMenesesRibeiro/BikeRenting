@@ -117,7 +117,7 @@ public class BinasPortImpl implements BinasPortType {
 			//And creates one in all the stations.
 			for (StationView stationView : stations) {
 				StationClient stationCli = BinasManager.getInstance().getStation(stationView.getId());
-				stationCli.setBalance(email, user.getCredit(), 1);
+				stationCli.setBalance(email, user.getCredit(), 1, 1);
 			}
 
 			isFinished = 0;
@@ -127,7 +127,7 @@ public class BinasPortImpl implements BinasPortType {
 					String stationId = stationView.getId();
 					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
 					//Asynchronous call with callback.
-					stationCli.setBalanceAsync(email, credit, 1, new AsyncHandler<SetBalanceResponse>() {
+					stationCli.setBalanceAsync(email, credit, 1, 1, new AsyncHandler<SetBalanceResponse>() {
 						@Override
 						public void handleResponse(Response<SetBalanceResponse> response) { isFinished += 1; }
 					});

@@ -62,11 +62,14 @@ public class StationPortImpl implements StationPortType {
 	public BalanceView getBalance(String email) throws UserNotFound_Exception {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
-			BalanceView view = new BalanceView();
+			BalanceView balanceView = new BalanceView();
 			System.out.println("User with email " + email + " found in this station. Balance: " + user.getBalance());
-			view.setBalance(user.getBalance());
-			view.setTag(user.getTag());
-			return view;
+			TagView tagView = new TagView();
+			tagView.setSeq(user.getTag().getSeq());
+			tagView.setCid(user.getTag().getCid());
+			balanceView.setBalance(user.getBalance());
+			balanceView.setTag(tagView);
+			return balanceView;
 		}
 		catch (UserNotFoundException e) {
 			System.out.println("User with email " + email + " not found in this station.");
@@ -82,22 +85,22 @@ public class StationPortImpl implements StationPortType {
 
 	/** Set balance of user. */
 	@Override
-	public void setBalance(String email, int balance, int tag) {
+	public void setBalance(String email, int balance, int seq, int cid) {
 		try {
 			TaggedUser user = UsersManager.getInstance().getUser(email);
 			user.setBalance(balance);
-			user.setTag(tag);
+			user.setTag(seq, cid);
 		}
 		catch (UserNotFoundException e) {
-			UsersManager.getInstance().addUser(email, balance, tag);
+			UsersManager.getInstance().addUser(email, balance, seq, cid);
 		}
 	}
 
 	@Override
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int tag) { return null; }
+	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, int seq, int cid) { return null; }
 
 	@Override
-	public Future<?> setBalanceAsync(String email, int balance, int tag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
+	public Future<?> setBalanceAsync(String email, int balance, int seq, int cid, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
 
 	/** Return a bike to the station. */
 	@Override

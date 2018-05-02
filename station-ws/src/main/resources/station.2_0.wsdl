@@ -40,7 +40,14 @@
             <xs:complexType name="balanceView">
                 <xs:sequence>
                     <xs:element name="balance" type="xs:int" />
-                    <xs:element name="tag" type="xs:int" />
+                    <xs:element name="tag" type="tns:TagView" />
+                </xs:sequence>
+            </xs:complexType>
+
+            <xs:complexType name="TagView">
+                <xs:sequence>
+                    <xs:element name="seq" type="xs:int" />
+                    <xs:element name="cid" type="xs:int" />
                 </xs:sequence>
             </xs:complexType>
 
@@ -74,7 +81,8 @@
                 <xs:sequence>
                     <xs:element name="email" type="xs:string" />
                     <xs:element name="balance" type="xs:int" />
-                    <xs:element name="tag" type="xs:int" />
+                    <xs:element name="seq" type="xs:int" />
+                    <xs:element name="cid" type="xs:int" />
                 </xs:sequence>
             </xs:complexType>
             <xs:element name="setBalance" type="tns:setBalance" />

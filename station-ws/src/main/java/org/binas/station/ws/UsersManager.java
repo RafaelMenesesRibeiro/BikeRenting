@@ -51,8 +51,8 @@ public class UsersManager {
 	}
 
 	/** Adds new User for this station. */
-	public void addUser(String email, int balance, int tag) {
-		TaggedUser user = new TaggedUser(email, balance, tag);
+	public void addUser(String email, int balance, int seq, int cid) {
+		TaggedUser user = new TaggedUser(email, balance, seq, cid);
 		registeredUsers.put(email, user);
 	} 
 	
