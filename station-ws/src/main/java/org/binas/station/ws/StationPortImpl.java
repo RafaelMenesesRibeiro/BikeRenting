@@ -169,6 +169,7 @@ public class StationPortImpl implements StationPortType {
 	@Override
 	public void testClear() {
 		Station.getInstance().reset();
+		UsersManager.getInstance().reset();
 	}
 
 	@Override

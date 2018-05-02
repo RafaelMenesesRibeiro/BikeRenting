@@ -53,18 +53,7 @@ public class BinasPortImpl implements BinasPortType {
 	private BinasEndpointManager endpointManager;
 
 	//Used to check if the asynchronous calls are done.
-	int isFinished = 0;
-	//Used to check if user exists after all the asynchronous calls.
-	boolean isAlreadyUser = false;
-	//Used to represent the sequence number in Quorum Consensus.
-	int sequenceNumber = 1;
-	//Used to represent the maximum sequence number of all the stations.
-	int  maxSeq = 0;
-	//Used to represent the minimum station id with the maximum sequence number.
-	int minCid = 0;
-
-	int cid = 1;
-
+	private int isFinished = 0;
 
 	public BinasPortImpl(BinasEndpointManager endpointManager) {
 		this.endpointManager = endpointManager;
@@ -73,115 +62,35 @@ public class BinasPortImpl implements BinasPortType {
 	@Override
 	public UserView activateUser(String email) throws InvalidEmail_Exception, EmailExists_Exception {
 		isFinished = 0;
-		isAlreadyUser = false;
-		maxSeq = 0;
-		minCid = 0;
 
 		try {
 			int stationNumber = BinasManager.getInstance().getStations().size();
-			int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
-			System.out.println("The minimum number of station answers is " + minStationAnswers);
-
-			CoordinatesView coordinatesView = new CoordinatesView();
-			coordinatesView.setX(0);
-			coordinatesView.setY(0);
-			List<StationView> stations = this.listStations(stationNumber, coordinatesView);
-
+			System.out.println("The minimum number of station answers is " + (int) Math.floor(stationNumber / 2) + 1);
 			System.out.println("Found " + stationNumber + " stations running.");			
-			for (StationView stationView : stations) {
-				try {
-					String stationId = stationView.getId();
-					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
-					//Asynchronous call with callback.
-					stationCli.getBalanceAsync(email, new AsyncHandler<GetBalanceResponse>() {
-						@Override
-						public void handleResponse(Response<GetBalanceResponse> response) {
-							try {
-								System.out.println("Asynchronous call result arrived: ");
-								String className = response.get().getBalanceInfo().getClass().getName();
-								if (className.equals("org.binas.station.ws.BalanceView")) {
-									isAlreadyUser = true;
-									int balance = response.get().getBalanceInfo().getBalance();
-									int seq = response.get().getBalanceInfo().getTag().getSeq();
-									int cid = response.get().getBalanceInfo().getTag().getCid();
-									if (seq > maxSeq) {
-										maxSeq = seq;
-										minCid = cid;
-									}
-									else if (seq == maxSeq && cid < minCid) { minCid = cid;	 }
-									System.out.println("Balance of user " + email + " is " + balance + ". According to station \"" + stationId + "\"");
-								}
-								isFinished += 1;
-							}
-							catch (InterruptedException ie) { System.out.println("Caught interrupted exception.\nCause: " + ie.getCause()); }
-							catch (ExecutionException ee) { isFinished += 1; }
-						}
-					});
-				}
-				catch (StationNotFoundException e) { /*Do nothing. Continue.*/ }
+			try {
+				this.getCredit(email);
+				System.out.println("OOOOOO");
+				throw new EmailExists_Exception("fbg jbjh", new EmailExists());
 			}
-			
-			while (isFinished != stationNumber) {
-				try {
-					Thread.sleep(100);
-					System.out.print(".");
-					System.out.flush();
-				}
-				catch (Exception e) { System.out.println("Caught exception.\n " + "Cause: " + e.getCause()); }
+			catch (UserNotExists_Exception enee) {
+				System.out.println("\nAll asynchronous calls completed.");
+				//If the user doens't exist in any of the available stations, creates one.
+				User user = BinasManager.getInstance().createUser(email);
+				//Creates the user in all stations.
+				this.setCredit(email, user.getCredit());
+				System.out.println("after set credir");
+				//Create and populate userView
+				UserView userView = new UserView();
+				userView.setEmail(user.getEmail());
+				userView.setCredit(user.getCredit());
+				userView.setHasBina(user.getHasBina());
+				return userView;
 			}
-
-			System.out.println("\nAll asynchronous calls completed.");
-
-			//If at least on of the stations report a user with the given email already exists, throws exception.
-			if (isAlreadyUser) { throw new UserAlreadyExistsException(); }
-
-			//If the user doens't exist in any of the available stations, creates one.
-			User user = BinasManager.getInstance().createUser(email);
-			
-			//Sets the sequence number to the maxSeq + 1 found from all the stations.
-			this.sequenceNumber = maxSeq + 1;
-
-			isFinished = 0;
-			int credit = user.getCredit();
-			//And creates one in all the stations.
-			for (StationView stationView : stations) {
-				try {
-					String stationId = stationView.getId();
-					StationClient stationCli = BinasManager.getInstance().getStation(stationId);
-					TagView newTag = getTag(email);
-					newTag.setSeq(newTag.getSeq());
-					newTag.setCid(cid);
-					//Asynchronous call with callback.
-					stationCli.setBalanceAsync(email, credit, newTag, new AsyncHandler<SetBalanceResponse>() {
-						@Override
-						public void handleResponse(Response<SetBalanceResponse> response) { isFinished += 1; }
-					});
-				}
-				catch (StationNotFoundException e) { /*Do nothing. Continue.*/ }
-				catch (UserNotExists_Exception enee) { /*Do nothing. Continue.*/ }
- 			}
-			
-			while (isFinished != stationNumber) {
-				try {
-					Thread.sleep(100);
-					System.out.print(".");
-					System.out.flush();
-				}
-				catch (Exception e) { System.out.println("Caught exception.\n " + "Cause: " + e.getCause()); }
-			}
-
-			//Create and populate userView
-			UserView userView = new UserView();
-			userView.setEmail(user.getEmail());
-			userView.setCredit(user.getCredit());
-			userView.setHasBina(user.getHasBina());
-			return userView;
-		}catch (UserAlreadyExistsException e) {
+		} catch (UserAlreadyExistsException e) {
 			throwEmailExists("Email already exists: " + email);
 		} catch (InvalidEmailException e) {
 			throwInvalidEmail("Invalid email: " + email);
 		}
-		//catch (QuorumConsensusException qce) { throwQuorumConsensus(qce.getMessage()); }
 		return null;
 	}
 
@@ -234,11 +143,17 @@ public class BinasPortImpl implements BinasPortType {
 			NoBinaAvail_Exception, NoCredit_Exception, UserNotExists_Exception {
 		
 		try {
-
-
-
-			
+			//Checks if the user already has a bina.
+			if (BinasManager.getInstance().hasUserBina(email)) { throw new UserAlreadyHasBinaException(); }
+			//Checks if the user hsa enough credit.
+			int userCredit = this.getCredit(email);
+			if (userCredit <= 0) { throw new InsufficientCreditsException(); }
+			//Rents the bina for the user.
 			BinasManager.getInstance().rentBina(stationId,email);
+			//Sets the user has bina to true.
+			BinasManager.getInstance().setUserHasBina(email, true);
+			//Decrements user balance in 1 unit.
+			this.setCredit(email, userCredit - 1);
 		} catch (UserNotFoundException e) {
 			throwUserNotExists("User not found: " + email);
 		} catch (InsufficientCreditsException e) {
@@ -257,7 +172,9 @@ public class BinasPortImpl implements BinasPortType {
 	public void returnBina(String stationId, String email)
 			throws FullStation_Exception, InvalidStation_Exception, NoBinaRented_Exception, UserNotExists_Exception {
 		try {
-			BinasManager.getInstance().returnBina(stationId,email);
+			int prize = BinasManager.getInstance().returnBina(stationId,email);
+			int credit = getCredit(email);
+			setCredit(email, credit + prize);
 		} catch (UserNotFoundException e) {
 			throwUserNotExists("User not found: " + email);
 		} catch (NoSlotAvail_Exception e) {
@@ -270,6 +187,7 @@ public class BinasPortImpl implements BinasPortType {
 	}
 
 	private BalanceView getBalanceView(String email) throws UserNotExists_Exception {
+		isFinished = 0;
         ArrayList<BalanceView> bvArray = new ArrayList<BalanceView>();
         int stationNumber = BinasManager.getInstance().getStations().size();
         int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
@@ -290,6 +208,7 @@ public class BinasPortImpl implements BinasPortType {
                         try {
                             System.out.println("Asynchronous call result arrived: ");
                             String className = response.get().getBalanceInfo().getClass().getName();
+                            System.out.println("AAAAAAAAAAAAAAAAAAa" + className);	
                             if (className.equals("org.binas.station.ws.BalanceView")) {
                                 bvArray.add(response.get().getBalanceInfo());
                             }
@@ -303,11 +222,16 @@ public class BinasPortImpl implements BinasPortType {
         }
 
         try {
-            while (bvArray.size() < minStationAnswers) {
+            while (bvArray.size() < minStationAnswers && isFinished < minStationAnswers) {
+            	System.out.printf("%d %d%n", bvArray.size(), minStationAnswers);
                 Thread.sleep(100);
             }
         } catch (InterruptedException ie) {
             System.out.println("Caught interrupted exception.\nCause: " + ie.getCause());
+        }
+
+        if (bvArray.size() == 0) {
+        	throw new UserNotExists_Exception("User does not exists", new UserNotExists());
         }
 
         int maxSeq = -1;
@@ -327,17 +251,29 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
     public int getCredit(String email) throws UserNotExists_Exception {
+    	System.out.println("GET CREDIT");
     	return getBalanceView(email).getBalance();
     }
 
     public TagView getTag(String email) throws UserNotExists_Exception {
+    	System.out.println("GET TAG");
     	return getBalanceView(email).getTag();
     }
 
-    public void setCredit(String email, int credit) throws UserNotExists_Exception{
-		TagView newTag = getTag(email);
-		newTag.setSeq(newTag.getSeq());
-		newTag.setCid(cid);
+    public void setCredit(String email, int credit) {
+    	System.out.println("SET CREDIT");
+    	TagView newTag = null;
+    	try {
+    		newTag = getTag(email);
+    		newTag.setSeq(newTag.getSeq());
+			newTag.setCid((int)Thread.currentThread().getId());
+    	} catch (UserNotExists_Exception unee){
+			newTag = new TagView();
+			newTag.setSeq(0);
+			newTag.setCid((int)Thread.currentThread().getId());
+    	}
+
+
     	ArrayList<Response> responsesArray = new ArrayList<Response>();
         int stationNumber = BinasManager.getInstance().getStations().size();
         int minStationAnswers = (int) Math.floor(stationNumber / 2) + 1;
