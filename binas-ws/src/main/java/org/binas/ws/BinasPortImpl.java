@@ -69,8 +69,7 @@ public class BinasPortImpl implements BinasPortType {
 			System.out.println("Found " + stationNumber + " stations running.");			
 			try {
 				this.getCredit(email);
-				System.out.println("OOOOOO");
-				throw new EmailExists_Exception("fbg jbjh", new EmailExists());
+				throw new EmailExists_Exception("Caught exception of email already exists while trying to activate user", new EmailExists());
 			}
 			catch (UserNotExists_Exception enee) {
 				System.out.println("\nAll asynchronous calls completed.");
@@ -78,7 +77,6 @@ public class BinasPortImpl implements BinasPortType {
 				User user = BinasManager.getInstance().createUser(email);
 				//Creates the user in all stations.
 				this.setCredit(email, user.getCredit());
-				System.out.println("after set credir");
 				//Create and populate userView
 				UserView userView = new UserView();
 				userView.setEmail(user.getEmail());
@@ -208,7 +206,6 @@ public class BinasPortImpl implements BinasPortType {
                         try {
                             System.out.println("Asynchronous call result arrived: ");
                             String className = response.get().getBalanceInfo().getClass().getName();
-                            System.out.println("AAAAAAAAAAAAAAAAAAa" + className);	
                             if (className.equals("org.binas.station.ws.BalanceView")) {
                                 bvArray.add(response.get().getBalanceInfo());
                             }
@@ -222,10 +219,7 @@ public class BinasPortImpl implements BinasPortType {
         }
 
         try {
-            while (bvArray.size() < minStationAnswers && isFinished < minStationAnswers) {
-            	System.out.printf("%d %d%n", bvArray.size(), minStationAnswers);
-                Thread.sleep(100);
-            }
+            while (bvArray.size() < minStationAnswers && isFinished < minStationAnswers) { Thread.sleep(100); }
         } catch (InterruptedException ie) {
             System.out.println("Caught interrupted exception.\nCause: " + ie.getCause());
         }
@@ -251,17 +245,14 @@ public class BinasPortImpl implements BinasPortType {
 
 	@Override
     public int getCredit(String email) throws UserNotExists_Exception {
-    	System.out.println("GET CREDIT");
     	return getBalanceView(email).getBalance();
     }
 
     public TagView getTag(String email) throws UserNotExists_Exception {
-    	System.out.println("GET TAG");
     	return getBalanceView(email).getTag();
     }
 
     public void setCredit(String email, int credit) {
-    	System.out.println("SET CREDIT");
     	TagView newTag = null;
     	try {
     		newTag = getTag(email);
