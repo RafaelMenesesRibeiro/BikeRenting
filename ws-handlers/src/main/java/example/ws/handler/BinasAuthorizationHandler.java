@@ -61,45 +61,48 @@ public class BinasAuthorizationHandler implements SOAPHandler<SOAPMessageContext
 	@Override
 	public boolean handleMessage(SOAPMessageContext smc) {
 		System.out.println("Auth Handler says hello!");
+		Boolean outboundElement = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+		if (!outboundElement) {
+			try {
+				String ticketX = (String) smc.get(TICKET_X_CONTEXT_PROP_NAME);
+				String authX = (String) smc.get(AUTH_X_CONTEXT_PROP_NAME);
 
-		try {
-			String ticketX = (String) smc.get(TICKET_X_CONTEXT_PROP_NAME);
-			String authX = (String) smc.get(AUTH_X_CONTEXT_PROP_NAME);
+				if (!ticketX.equals(authX)) { 
+					System.out.println("BinasAuthorizationHandler: The Client name in the Session Ticket and the Auth didn't match.");
+					System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
+					return false; 
+				}
 
-			if (!ticketX.equals(authX)) { 
-				System.out.println("BinasAuthorizationHandler: The Client name in the Session Ticket and the Auth didn't match.");
-				System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
-				return false; 
+				SOAPMessage msg = smc.getMessage();
+				SOAPPart sp = msg.getSOAPPart();
+				SOAPEnvelope se = sp.getEnvelope();
+				SOAPHeader sh = se.getHeader();
+
+				SOAPBody sb = msg.getSOAPBody();
+				NodeList nodes = sb.getElementsByTagName("email");
+				Node node = nodes.item(0);
+				String nodeValue = (String) node.getTextContent();
+
+				if (!ticketX.equals(nodeValue)) {
+					System.out.println("BinasAuthorizationHandler: The Client name in the Session Ticket and the Request didn't match.");
+					System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
+					return false;
+				}
+				else if (!authX.equals(nodeValue)) {
+					System.out.println("BinasAuthorizationHandler: The Client name in the Auth and the Request didn't match.");
+					System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
+					return false;	
+				}
+				return true;
 			}
-
-			SOAPMessage msg = smc.getMessage();
-			SOAPPart sp = msg.getSOAPPart();
-			SOAPEnvelope se = sp.getEnvelope();
-			SOAPHeader sh = se.getHeader();
-
-			SOAPBody sb = msg.getSOAPBody();
-			NodeList nodes = sb.getElementsByTagName("email");
-			Node node = nodes.item(0);
-			String nodeValue = (String) node.getTextContent();
-
-			if (!ticketX.equals(nodeValue)) {
-				System.out.println("BinasAuthorizationHandler: The Client name in the Session Ticket and the Request didn't match.");
-				System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
-				return false;
+			catch (Exception e) {
+				System.out.print("Caught exception in handleMessage: ");
+				System.out.println(e);
+				System.out.println("Continue normal processing...");
 			}
-			else if (!authX.equals(nodeValue)) {
-				System.out.println("BinasAuthorizationHandler: The Client name in the Auth and the Request didn't match.");
-				System.out.println("BinasAuthorizationHandler: Exiting normal message processing.");
-				return false;	
-			}
-			return true;
+			return false;
 		}
-		catch (Exception e) {
-			System.out.print("Caught exception in handleMessage: ");
-			System.out.println(e);
-			System.out.println("Continue normal processing...");
-		}
-		return false;
+		return true;
 	}
 
 	/** The handleFault method is invoked for fault message processing. */

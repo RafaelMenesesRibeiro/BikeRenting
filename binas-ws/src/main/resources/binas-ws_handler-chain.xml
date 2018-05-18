@@ -15,24 +15,12 @@
 	     to log the message at the beginning and at the end of the chain.
 	-->
     <handler-chain>
+		<!-- 
+            Print the SOAP message with added indentation for easier reading.
+        -->
 		<handler>
             <handler-class>example.ws.handler.PrettyLogHandler</handler-class>
         </handler>
-		<!-- 
-		    Print the message context properties (scope,key,value)
-		    that are made available by the JAX-WS runtime to the handlers.
-		-->
-        <!--handler>
-            <handler-class>example.ws.handler.MessageContextHandler</handler-class>
-        </handler-->
-
-		<!--
-		    Write a custom SOAP header to an outbound message;
-		    read the custom header from the inbound message 
-		-->
-        <!--handler>
-            <handler-class>example.ws.handler.HeaderHandler</handler-class>
-        </handler-->
 
 		<!-- 
 		    Print the endpoint address.
@@ -41,27 +29,31 @@
 			<handler-class>example.ws.handler.EndpointAddressHandler</handler-class>
 		</handler>
 
+		<!-- 
+            Authenticates the client.
+        -->
 		<handler>
 			<handler-class>example.ws.handler.KerberosServerHandler</handler-class>
 		</handler>
 
-		<!-- <handler>
+		<!-- 
+            Verifies the identity of the SOAP Message.
+        -->
+		<!--
+		<handler>
 			<handler-class>example.ws.handler.MACHandler</handler-class>
-		</handler> -->
-
-		<!-- <handler>
-			<handler-class>example.ws.handler.BinasAuthorizationHandler</handler-class>
-		</handler> -->
-
-
+		</handler>
+		-->
 
 		<!-- 
-		    Print the SOAP message direction and contents. 
+            Verifies the client has the authorization for the given request.
+        -->
+		<!--
+		<handler>
+			<handler-class>example.ws.handler.BinasAuthorizationHandler</handler-class>
+		</handler>
 		-->
-        <!--handler>
-            <handler-class>example.ws.handler.LogHandler</handler-class>
-        </handler-->
-
+		
         <!-- 
             Print the SOAP message with added indentation for easier reading.
         -->

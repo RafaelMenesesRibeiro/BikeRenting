@@ -43,7 +43,16 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 
 	public static final String RESPONSE_PROPERTY = "my.request.property";
 
-        
+    /*
+	* Defines the Message Context Property name where the Client's nams
+	*/
+	private final String TICKET_X_CONTEXT_PROP_NAME = "ticketX";
+	/*
+	* Defines the Message Context Property name where the Key known by both
+	* the Server and the Client is stored.
+	*/
+	private final String AUTH_X_CONTEXT_PROP_NAME = "authX";
+
     //
 	// Handler interface implementation
 	//
@@ -119,6 +128,9 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 				return;			
 			}
 
+			smc.put(TICKET_X_CONTEXT_PROP_NAME, ticket.getX());
+			smc.setScope(TICKET_X_CONTEXT_PROP_NAME, Scope.APPLICATION);
+
 			if (!validateTicket(ticket)) {
 				System.out.println("Server --- The ticket was not valid.");
 				return;
@@ -138,6 +150,9 @@ public class KerberosServerHandler implements SOAPHandler<SOAPMessageContext> {
 				System.out.println("Server --- The auth was not valid.");
 				return;
 			}
+
+			smc.put(AUTH_X_CONTEXT_PROP_NAME, auth.getX());
+			smc.setScope(AUTH_X_CONTEXT_PROP_NAME, Scope.APPLICATION);
 
 			RequestTime requestTime = new RequestTime(auth.getTimeRequest());
 			CipheredView requestCiphered = null;
