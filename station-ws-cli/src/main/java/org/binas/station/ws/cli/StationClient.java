@@ -6,19 +6,12 @@ import java.util.Map;
 
 import javax.xml.ws.BindingProvider;
 
-import java.util.concurrent.Future;
-import javax.xml.ws.Response;
-import javax.xml.ws.AsyncHandler;
-
 import org.binas.station.ws.BadInit_Exception;
 import org.binas.station.ws.NoBinaAvail_Exception;
 import org.binas.station.ws.NoSlotAvail_Exception;
-import org.binas.station.ws.UserNotFound_Exception;
 import org.binas.station.ws.StationPortType;
 import org.binas.station.ws.StationService;
 import org.binas.station.ws.StationView;
-import org.binas.station.ws.TagView;
-import org.binas.station.ws.BalanceView;
 
 import pt.ulisboa.tecnico.sdis.ws.uddi.UDDINaming;
 
@@ -120,46 +113,14 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public Response<org.binas.station.ws.GetInfoResponse> getInfoAsync() { return port.getInfoAsync(); }
-
-	@Override
-	public Future<?> getInfoAsync(AsyncHandler<org.binas.station.ws.GetInfoResponse> asyncHandler) { return port.getInfoAsync(asyncHandler); }
-
-	@Override
-	public BalanceView getBalance(String email) throws UserNotFound_Exception { return port.getBalance(email); }
-
-	public Response<org.binas.station.ws.GetBalanceResponse> getBalanceAsync(String email) { return port.getBalanceAsync(email); }
-
-	public Future<?> getBalanceAsync(String email, AsyncHandler<org.binas.station.ws.GetBalanceResponse> asyncHandler) { return port.getBalanceAsync(email, asyncHandler); }
-
-	@Override
-	public void setBalance(String email, int balance, TagView newTag) { port.setBalance(email, balance, newTag); }
-
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, TagView newTag) { return port.setBalanceAsync(email, balance, newTag); }
-
-	public Future<?> setBalanceAsync(String email, int balance, TagView newTag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return port.setBalanceAsync(email, balance, newTag, asyncHandler); }
-
-	@Override
 	public void getBina() throws NoBinaAvail_Exception {
 		port.getBina();
 	}
 
 	@Override
-	public Response<org.binas.station.ws.GetBinaResponse> getBinaAsync() { return port.getBinaAsync(); }
-
-	@Override
-	public Future<?> getBinaAsync(AsyncHandler<org.binas.station.ws.GetBinaResponse> asyncHandler) { return port.getBinaAsync(asyncHandler); }
-
-	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
 		return port.returnBina();
 	}
-
-	@Override
-	public Response<org.binas.station.ws.ReturnBinaResponse> returnBinaAsync() { return port.returnBinaAsync(); }
-
-	@Override
-	public Future<?> returnBinaAsync(AsyncHandler<org.binas.station.ws.ReturnBinaResponse> asyncHandler) { return port.returnBinaAsync(asyncHandler); }
 
 	// test control operations ------------------------------------------------
 
@@ -169,31 +130,13 @@ public class StationClient implements StationPortType {
 	}
 
 	@Override
-	public Response<org.binas.station.ws.TestPingResponse> testPingAsync(String inputMessage) { return port.testPingAsync(inputMessage); }
-
-	@Override
-	public Future<?> testPingAsync(String inputMessage, AsyncHandler<org.binas.station.ws.TestPingResponse> asyncHandler) { return port.testPingAsync(inputMessage, asyncHandler); }
-
-	@Override
 	public void testClear() {
 		port.testClear();
 	}
 
 	@Override
-	public Response<org.binas.station.ws.TestClearResponse> testClearAsync() { return port.testClearAsync(); }
-
-	@Override
-	public Future<?> testClearAsync(AsyncHandler<org.binas.station.ws.TestClearResponse> asyncHandler) { return port.testClearAsync(asyncHandler); }
-
-	@Override
 	public void testInit(int x, int y, int capacity, int returnPrize) throws BadInit_Exception {
 		port.testInit(x, y, capacity, returnPrize);
 	}
-
-	@Override
-	public Response<org.binas.station.ws.TestInitResponse> testInitAsync(int x, int y, int capacity, int returnPrize) { return port.testInitAsync(x, y, capacity, returnPrize); }
-
-	@Override
-	public Future<?> testInitAsync(int x, int y, int capacity, int returnPrize, AsyncHandler<org.binas.station.ws.TestInitResponse> asyncHandler) { return port.testInitAsync(x, y, capacity, returnPrize, asyncHandler); }
 
 }

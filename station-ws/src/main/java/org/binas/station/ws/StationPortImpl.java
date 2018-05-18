@@ -1,14 +1,9 @@
 package org.binas.station.ws;
 
-import java.util.concurrent.Future;
 import javax.jws.WebService;
-import javax.xml.ws.Response;
-import javax.xml.ws.AsyncHandler;
 
-import org.binas.station.ws.UsersManager;
 import org.binas.station.domain.Coordinates;
 import org.binas.station.domain.Station;
-import org.binas.station.domain.exception.UserNotFoundException;
 import org.binas.station.domain.exception.BadInitException;
 import org.binas.station.domain.exception.NoBinaAvailException;
 import org.binas.station.domain.exception.NoSlotAvailException;
@@ -18,7 +13,7 @@ import org.binas.station.domain.exception.NoSlotAvailException;
  * below "map" the Java class to the WSDL definitions.
  */
 @WebService(endpointInterface = "org.binas.station.ws.StationPortType",
-            wsdlLocation = "station.2_0.wsdl",
+            wsdlLocation = "station.wsdl",
             name ="StationWebService",
             portName = "StationPort",
             targetNamespace="http://ws.station.binas.org/",
@@ -51,57 +46,6 @@ public class StationPortImpl implements StationPortType {
 		}
 	}
 
-	@Override
-	public Response<org.binas.station.ws.GetInfoResponse> getInfoAsync() { return null; }
-
-	@Override
-	public Future<?> getInfoAsync(AsyncHandler<org.binas.station.ws.GetInfoResponse> asyncHandler) { return null; }
-
-	/** Retrieve balance of user. */
-	@Override
-	public BalanceView getBalance(String email) throws UserNotFound_Exception {
-		try {
-			TaggedUser user = UsersManager.getInstance().getUser(email);
-			BalanceView balanceView = new BalanceView();
-			System.out.println("User with email " + email + " found in this station. Balance: " + user.getBalance());
-			TagView tagView = new TagView();
-			tagView.setSeq(user.getTag().getSeq());
-			tagView.setCid(user.getTag().getCid());
-			balanceView.setBalance(user.getBalance());
-			balanceView.setTag(tagView);
-			return balanceView;
-		}
-		catch (UserNotFoundException e) {
-			System.out.println("User with email " + email + " not found in this station.");
-			throw new UserNotFound_Exception("User with email " + email + " not found in this station.", new UserNotFound());
-		}
-	}
-
-	@Override
-	public Response<org.binas.station.ws.GetBalanceResponse> getBalanceAsync(String email) { return null; }
-
-	@Override
-	public Future<?> getBalanceAsync(String email, AsyncHandler<org.binas.station.ws.GetBalanceResponse> asyncHandler) { return null; }
-
-	/** Set balance of user. */
-	@Override
-	public void setBalance(String email, int balance, TagView newTag) {
-		try {
-			TaggedUser user = UsersManager.getInstance().getUser(email);
-			user.setBalance(balance);
-			user.setTag(newTag.getSeq(), newTag.getCid());
-		}
-		catch (UserNotFoundException e) {
-			UsersManager.getInstance().addUser(email, balance, newTag.getSeq(), newTag.getCid());
-		}
-	}
-
-	@Override
-	public Response<org.binas.station.ws.SetBalanceResponse> setBalanceAsync(String email, int balance, TagView newTag) { return null; }
-
-	@Override
-	public Future<?> setBalanceAsync(String email, int balance, TagView newTag, AsyncHandler<org.binas.station.ws.SetBalanceResponse> asyncHandler) { return null; }
-
 	/** Return a bike to the station. */
 	@Override
 	public int returnBina() throws NoSlotAvail_Exception {
@@ -115,12 +59,6 @@ public class StationPortImpl implements StationPortType {
 		return bonus;
 	}
 
-	@Override
-	public Response<org.binas.station.ws.ReturnBinaResponse> returnBinaAsync() { return null; }
-
-	@Override
-	public Future<?> returnBinaAsync(AsyncHandler<org.binas.station.ws.ReturnBinaResponse> asyncHandler) { return null; }
-
 	/** Take a bike from the station. */
 	@Override
 	public void getBina() throws NoBinaAvail_Exception {
@@ -132,11 +70,6 @@ public class StationPortImpl implements StationPortType {
 		}
 	}
 
-	@Override
-	public Response<org.binas.station.ws.GetBinaResponse> getBinaAsync() { return null; }
-
-	@Override
-	public Future<?> getBinaAsync(AsyncHandler<org.binas.station.ws.GetBinaResponse> asyncHandler) { return null; }
 
 	// Test Control operations -----------------------------------------------
 
@@ -159,25 +92,11 @@ public class StationPortImpl implements StationPortType {
 		return builder.toString();
 	}
 
-	@Override
-	public Response<org.binas.station.ws.TestPingResponse> testPingAsync(String inputMessage) { return null; }
-
-	@Override
-	public Future<?> testPingAsync(String inputMessage, AsyncHandler<org.binas.station.ws.TestPingResponse> asyncHandler) { return null; }
-
 	/** Return all station variables to default values. */
 	@Override
 	public void testClear() {
 		Station.getInstance().reset();
-		UsersManager.getInstance().reset();
 	}
-
-	@Override
-	public Response<org.binas.station.ws.TestClearResponse> testClearAsync() { return null; }
-
-	@Override
-	public Future<?> testClearAsync(AsyncHandler<org.binas.station.ws.TestClearResponse> asyncHandler) { return null; }
-
 
 	/** Set station variables with specific values. */
 	@Override
@@ -188,12 +107,6 @@ public class StationPortImpl implements StationPortType {
 			throwBadInit("Invalid initialization values!");
 		}
 	}
-
-	@Override
-	public Response<org.binas.station.ws.TestInitResponse> testInitAsync(int x, int y, int capacity, int returnPrize) { return null; }
-
-	@Override
-	public Future<?> testInitAsync(int x, int y, int capacity, int returnPrize, AsyncHandler<org.binas.station.ws.TestInitResponse> asyncHandler) { return null; }
 
 	// View helpers ----------------------------------------------------------
 
@@ -239,13 +152,6 @@ public class StationPortImpl implements StationPortType {
 		BadInit faultInfo = new BadInit();
 		faultInfo.message = message;
 		throw new BadInit_Exception(message, faultInfo);
-	}
-
-	/** Helper to throw a new NoSlotAvail exception. */
-	private void throwUserNotFound(final String message) throws UserNotFound_Exception {
-		UserNotFound faultInfo = new UserNotFound();
-		faultInfo.message = message;
-		throw new UserNotFound_Exception(message, faultInfo);
 	}
 
 }
