@@ -1,5 +1,11 @@
-# Binas
-Distributed Systems 2017-2018 project
+# BikeRenting
+
+[University Project]
+
+[3rd Year - 2nd Semester]
+
+Objective: Learn to use the severall tools and mechanisms present in distributed systems, such as user authentication (with Kerberos), data replication (with Quorum Consensus), message integrity, and others.
+
 
 ## Instructions
 1- Start a local jUDDI server ([instructions](http://disciplinas.tecnico.ulisboa.pt/leic-sod/2017-2018/labs/software/index.html))
