@@ -44,8 +44,6 @@ public class User {
 	public boolean getHasBina() {
 		return hasBina.get();
 	}
-
-	public void setHasBina(boolean b) { hasBina.set(b); }
 	
 
 	public int getCredit() {
@@ -72,11 +70,12 @@ public class User {
 		hasBina.set(true);
 	}
 
-	public synchronized void effectiveReturn() throws UserHasNoBinaException {
+	public synchronized void effectiveReturn(int prize) throws UserHasNoBinaException {
 		if( ! getHasBina()) {
 			throw new UserHasNoBinaException();
 		}
 		hasBina.set(false);
+		incrementBalance(prize);
 	}
 
 
